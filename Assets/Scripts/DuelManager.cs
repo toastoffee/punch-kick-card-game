@@ -13,7 +13,7 @@ class Unit
     
     public Unit(int hp, float def, float pwr)
     {
-        this.hp = hp;
+        this.hp  = hp;
         this.def = def;
         this.pwr = pwr;
     }
@@ -57,6 +57,8 @@ public class DuelManager : MonoBehaviour
     private int _mEnemyActIdx = -1;
 
     private int _mSelectedCardIdx = 0;
+
+    private List<CardType> _mSeq;
     
     private void Start()
     {
@@ -67,6 +69,7 @@ public class DuelManager : MonoBehaviour
         _mHandCards = new List<CardType>();
         _mUsedCards = new List<CardType>();
         _mLogs = new();
+        _mSeq = new();
 
         _mPlayerAp = mPlayerApPerTurn;
         _mPlayerDrawCards = mPlayerCardsPerTurn;
@@ -90,6 +93,7 @@ public class DuelManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.J))
         {
             // use card
+            TryPlayCard();
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
@@ -327,8 +331,46 @@ public class DuelManager : MonoBehaviour
         _mEnemy.def += amount;
     }
 
-    public void TryPlayCard(CardType type)
+    public void TryPlayCard()
     {
+        var type = _mHandCards[_mSelectedCardIdx];
+        int apCost = 0;
+        switch (type)
+        {
+            case CardType.LightPunch:
+            case CardType.Parry:
+                apCost = 1;
+                break;
+            case CardType.HeavyPunch:
+                apCost = 2;
+                break;
+            default:
+                apCost = 0;
+                break;
+        }
+
+        if (apCost > _mPlayerAp)
+        {
+            return;
+        }
+        else
+        {
+            _mPlayerAp -= apCost;
+        }
+
+        switch (type)
+        {
+            case CardType.LightPunch:
+                break;
+            case CardType.HeavyPunch:
+                break;
+            case CardType.Parry:
+                break;
+            case CardType.MindPower:
+                break;
+            case CardType.Overload:
+                break;
+        }
         
     }
 }
