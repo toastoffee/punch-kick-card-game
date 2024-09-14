@@ -18,3 +18,6 @@ MonoBehaviour:
   - objectType: UnityEngine.Sprite
     objects:
     - {fileID: 21300000, guid: cdbb09a49ef47624aabfc695f4778f2c, type: 3}
+    - {fileID: 21300000, guid: ab72f7ab78a247b44a04adb7690e78d0, type: 3}
+    - {fileID: 21300000, guid: 8d1704b41ca72704cb07d34ae42304b4, type: 3}
+    - {fileID: 21300000, guid: 9d685059b90abf7428c064fb12e43e28, type: 3}
