@@ -29,6 +29,8 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public MapInst inst;
     public Vector2Int instOffset;
 
+    public CellPort[] ports = new CellPort[4];
+
     public int drawSeq;
 
     public int x {
@@ -60,10 +62,30 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public Cell rootCell;
     public MapInstModel model;
     public MapInstData data = new MapInstData();
+
+    public SeqNumChecker updateSeq;
     public event Action<CircuitUpdateContext> onCircuitUpdate;
 
-    public void NotifyCircuitUpdate(CircuitUpdateContext ctx) {
+
+    public bool CheckCircuitUpdate(CircuitUpdateContext ctx) {
+      if (!updateSeq.Check(ctx.updateSeqNum)) {
+        return false;
+      }
+
       onCircuitUpdate?.Invoke(ctx);
+      return true;
+    }
+
+    public IEnumerable<MapInst> FindNeightbors() {
+      foreach (var port in rootCell.ports) {
+        if (port == null) {
+          continue;
+        }
+        var neightbor = port.GetOther(rootCell);
+        if (neightbor != null && neightbor.inst != null) {
+          yield return neightbor.inst;
+        }
+      }
     }
   }
 
@@ -79,31 +101,29 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public MapInstOnAttach onAttach;
   }
 
-  //public class CellPort {
-  //  public Cell[] cells = new Cell[2];
+  public class CellPort {
+    public Cell[] cells = new Cell[2];
 
-  //  public Cell GetOther(Cell cell) {
-  //    for (int i = 0; i < cells.Length; i++) {
-  //      if (cells[i] != null && cells[i] != cell) {
-  //        return cells[i];
-  //      }
-  //    }
-  //    return null;
-  //  }
+    public Cell GetOther(Cell cell) {
+      for (int i = 0; i < cells.Length; i++) {
+        if (cells[i] != null && cells[i] != cell) {
+          return cells[i];
+        }
+      }
+      return null;
+    }
 
-  //  public void Set(Cell cell0, Cell cell1) {
-  //    cells[0] = cell0;
-  //    cells[1] = cell1;
-  //  }
-  //}
+    public void Set(Cell cell0, Cell cell1) {
+      cells[0] = cell0;
+      cells[1] = cell1;
+    }
+  }
 
   public class CircuitPort {
     private static List<CircuitPort> allPorts = new List<CircuitPort>();
     public MapInst selfInst;
     public MapInst otherInst;
     public Vector2Int offset;
-    public SeqNumChecker updateSeq;
-
 
     public static CircuitPort Create(MapInst other, Vector2Int selfPos, Vector2Int otherPos) {
       var res = new CircuitPort {
@@ -113,15 +133,6 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       };
       allPorts.Add(res);
       return res;
-    }
-
-    public bool CheckCircuitUpdate(CircuitUpdateContext ctx) {
-      if (!updateSeq.Check(ctx.updateSeqNum)) {
-        return false;
-      }
-
-      selfInst.NotifyCircuitUpdate(ctx);
-      return true;
     }
   }
 
@@ -199,12 +210,24 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public int updateSeqNum;
     private static Queue<MapInst> queueBuffer = new Queue<MapInst>();
 
-    public void NotifyUpdate(List<CircuitPort> allPorts) {
-      for (int i = 0; i < allPorts.Count; i++) {
-        var port = allPorts[i];
+    public void NotifyUpdate(IEnumerable<MapInst> allInst) {
+      updateSeqNum++;
+      foreach (var inst in allInst) {
+        if (inst.CheckCircuitUpdate(this)) {
+          queueBuffer.Enqueue(inst);
+          while (queueBuffer.Count > 0) {
+            var next = queueBuffer.Dequeue();
+            foreach (var neightbor in next.FindNeightbors()) {
+              if (neightbor.CheckCircuitUpdate(this)) {
+                queueBuffer.Enqueue(neightbor);
+              }
+            }
+          }
+        }
       }
     }
   }
+  private CircuitUpdateContext circuitUpdateContext = new CircuitUpdateContext();
 
   public Dictionary<string, MapInstModel> mapInstModel;
 
@@ -240,6 +263,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
 
   public void Start() {
     InitMap();
+    InitCellPorts();
   }
 
   private void InitMap() {
@@ -263,18 +287,24 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     }
   }
 
-  //private void InitCellPorts() {
-  //  foreach (var cell in m_cells) {
-  //    for (int i = 0; i < 4; i++) {
-  //      if (cell.ports[i] != null) {
-  //        continue;
-  //      }
-  //      var port = new CellPort();
-  //      var offset = Cell.near4[i];
-  //      var other = m_cells.SafeGet(cell.pos + offset);
-  //    }
-  //  }
-  //}
+  private void InitCellPorts() {
+    foreach (var cell in m_cells) {
+      for (int i = 0; i < 4; i++) {
+        if (cell.ports[i] != null) {
+          continue;
+        }
+        var port = new CellPort();
+        var offset = Cell.near4[i];
+        var other = m_cells.SafeGet(cell.pos + offset);
+        if (other == null) {
+          continue;
+        }
+        port.Set(cell, other);
+        cell.ports[i] = port;
+        other.ports[(i + 2) % 4] = port;
+      }
+    }
+  }
 
   public MapInst CreatMapInst(string modelId) {
     var model = mapInstModel[modelId];
@@ -302,10 +332,11 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
 
   public void OnCellClick(Cell cell) {
     switch (selectedToolId) {
+      case "debug":
+        break;
       case "pipe":
         PlantInstOnCell(cell, "pipe");
         break;
-
       default:
         break;
     }
@@ -331,5 +362,6 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         selfPipe.ConnectTo(otherPipe, inst.rootCell.pos, cell.pos);
       }
     }
+    circuitUpdateContext.NotifyUpdate(m_mapInsts.Values);
   }
 }
