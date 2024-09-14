@@ -32,23 +32,74 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public void NotifyDraw() {
       drawSeq++;
     }
+
+    public IEnumerable<Cell> Near4Area() {
+      var map = TheFactoryGame.Instance.m_cells;
+      yield return map.SafeGet(pos + Vector2Int.up);
+      yield return map.SafeGet(pos + Vector2Int.right);
+      yield return map.SafeGet(pos + Vector2Int.down);
+      yield return map.SafeGet(pos + Vector2Int.left);
+    }
   }
 
   public class MapInst {
     public int instId;
+    public Cell rootCell;
     public MapInstModel model;
     public Dictionary<string, object> data = new Dictionary<string, object>();
   }
 
+  public delegate void MapInstOnAttach(MapInst mapInst);
+
   public class MapInstModel {
     public string modelId;
     public string sprId;
+    public MapInstOnAttach onAttach;
   }
 
   public class Pipe_State {
+    public MapInst self;
     public MapInst[] ports = new MapInst[2];
+    public int portFlag;
+    public int connectedCount {
+      get {
+        var cnt = 0;
+        for (int i = 0; i < 2; i++) {
+          if (ports[i] != null) {
+            cnt++;
+          }
+        }
+        return cnt;
+      }
+    }
+    public int availPortIdx {
+      get {
+        for (int i = 0; i < 2; i++) {
+          if (ports[i] != null) {
+            return i;
+          }
+        }
+        return -1;
+      }
+    }
 
+    public void ConnectTo(Pipe_State other) {
+      if (other == null) {
+        return;
+      }
+      if (connectedCount >= 2 || other.connectedCount >= 2) {
+        return;
+      }
+      ports[availPortIdx] = other.self;
+      other.ports[availPortIdx] = self;
 
+      UpdateConnect();
+      other.UpdateConnect();
+    }
+
+    private void UpdateConnect() {
+
+    }
   }
 
   public Dictionary<string, MapInstModel> mapInstModel;
@@ -63,7 +114,8 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       {
         "pipe",
         new MapInstModel {
-          sprId = "pipe"
+          sprId = "pipe",
+          onAttach = InstAttach_Pipe
         }
       }
     };
@@ -122,10 +174,27 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
 
     var inst = CreatMapInst("pipe");
     cell.inst = inst;
+    inst.rootCell = cell;
+    inst.model.onAttach?.Invoke(inst);
     cell.NotifyDraw();
   }
 
   public void OnCellClick(Cell cell) {
     PlantInstOnCell(cell);
+  }
+
+  private void InstAttach_Pipe(MapInst inst) {
+    inst.data["pipe"] = new Pipe_State() {
+      self = inst
+    };
+
+    foreach (var cell in inst.rootCell.Near4Area()) {
+      if (cell == null) {
+        return;
+      }
+      if (cell.inst != null && cell.inst.model.modelId == "pipe") {
+
+      }
+    }
   }
 }
