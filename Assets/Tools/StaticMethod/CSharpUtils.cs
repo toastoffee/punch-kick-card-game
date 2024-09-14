@@ -209,4 +209,7 @@ public struct SeqNumChecker {
     m_cachedNum = seqNum;
     return flag;
   }
+
+  public static bool operator ==(SeqNumChecker a, SeqNumChecker b) => a.m_cachedNum == b.m_cachedNum;
+  public static bool operator !=(SeqNumChecker a, SeqNumChecker b) => a.m_cachedNum != b.m_cachedNum;
 }

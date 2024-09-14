@@ -64,7 +64,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public MapInstData data = new MapInstData();
 
     public SeqNumChecker updateSeq;
-    public event Action<CircuitUpdateContext> onCircuitUpdate;
+    public event Action<MapInst, CircuitUpdateContext> onCircuitUpdate;
 
 
     public bool CheckCircuitUpdate(CircuitUpdateContext ctx) {
@@ -72,7 +72,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         return false;
       }
 
-      onCircuitUpdate?.Invoke(ctx);
+      onCircuitUpdate?.Invoke(this, ctx);
       return true;
     }
 
@@ -119,43 +119,21 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     }
   }
 
-  public class CircuitPort {
-    private static List<CircuitPort> allPorts = new List<CircuitPort>();
-    public MapInst selfInst;
-    public MapInst otherInst;
-    public Vector2Int offset;
-
-    public static CircuitPort Create(MapInst other, Vector2Int selfPos, Vector2Int otherPos) {
-      var res = new CircuitPort {
-        selfInst = other,
-        offset = otherPos - selfPos,
-        otherInst = other
-      };
-      allPorts.Add(res);
-      return res;
-    }
-  }
-
   public class Pipe_State {
-    private CircuitPort[] ports = new CircuitPort[2];
-
-    public MapInst self;
-    public int portFlag { get; private set; }
-    public int connectedCount {
+    public Pipe_State[] connect_pipes = new Pipe_State[2];
+    public int connectedCnt {
       get {
         var cnt = 0;
         for (int i = 0; i < 2; i++) {
-          if (ports[i] != null) {
-            cnt++;
-          }
+          cnt += connect_pipes[i] == null ? 0 : 1;
         }
         return cnt;
       }
     }
-    public int availPortIdx {
+    public int nextConnectIdx {
       get {
         for (int i = 0; i < 2; i++) {
-          if (ports[i] == null) {
+          if (connect_pipes[i] == null) {
             return i;
           }
         }
@@ -163,28 +141,43 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       }
     }
 
-    public void ConnectTo(Pipe_State other, Vector2Int selfPos, Vector2Int otherPos) {
-      if (other == null) {
-        return;
-      }
-      if (connectedCount >= 2 || other.connectedCount >= 2) {
-        return;
-      }
-      ports[availPortIdx] = CircuitPort.Create(other.self, selfPos, otherPos);
-      other.ports[other.availPortIdx] = CircuitPort.Create(self, otherPos, selfPos);
+    public MapInst self;
+    public int portFlag { get; private set; }
 
-      UpdateConnect();
-      other.UpdateConnect();
+    public SeqNumChecker circuitSeq;
+
+    public bool Contain(Pipe_State other) {
+      foreach (var pipe in connect_pipes) {
+        if (pipe == other) {
+          return true;
+        }
+      }
+      return false;
     }
 
-    private void UpdateConnect() {
+    public void OnCircuitUpdate(MapInst inst, CircuitUpdateContext ctx) {
       portFlag = 0;
-      for (int i = 0; i < 2; i++) {
-        var port = ports[i];
-        if (port == null || port.selfInst == null) {
+      foreach (var cell in self.rootCell.Near4Area()) {
+        if (connectedCnt >= 2) {
+          break;
+        }
+        if (cell == null) {
           continue;
         }
-        SetPortFlag(port.offset);
+        if (cell.inst != null && cell.inst.model.modelId == "pipe") {
+          var otherPipe = cell.inst.data.pipeState;
+          if (otherPipe.Contain(this) || otherPipe.connectedCnt >= 2) {
+            continue;
+          }
+          connect_pipes[nextConnectIdx] = otherPipe;
+          otherPipe.connect_pipes[otherPipe.nextConnectIdx] = this;
+        }
+      }
+      foreach (var pipe in connect_pipes) {
+        if (pipe == null) {
+          continue;
+        }
+        SetPortFlag(pipe.self.rootCell.pos - self.rootCell.pos);
       }
       self.rootCell.NotifyDraw();
     }
@@ -352,16 +345,9 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       self = inst
     };
     inst.data.pipeState = selfPipe;
+    inst.onCircuitUpdate += selfPipe.OnCircuitUpdate;
 
-    foreach (var cell in inst.rootCell.Near4Area()) {
-      if (cell == null) {
-        return;
-      }
-      if (cell.inst != null && cell.inst.model.modelId == "pipe") {
-        var otherPipe = cell.inst.data.pipeState;
-        selfPipe.ConnectTo(otherPipe, inst.rootCell.pos, cell.pos);
-      }
-    }
     circuitUpdateContext.NotifyUpdate(m_mapInsts.Values);
   }
+
 }
