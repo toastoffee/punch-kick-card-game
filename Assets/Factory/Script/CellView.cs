@@ -48,28 +48,39 @@ public class CellView : MonoBehaviour {
       case "pipe":
         Draw_Pipe();
         break;
-      case "machine":
-        Draw_Machine();
-        break;
       default:
         Draw_Default();
         break;
     }
   }
 
-  private void Draw_Machine()
-  {
+  private void Draw_Machine() {
     var spr = sprLoader.Load<Sprite>("machine_str");
   }
 
   private void Draw_Pipe() {
-  
+
   }
 
   private void Draw_Default() {
     cellSprImg.transform.rotation = Quaternion.identity;
     var spr = sprLoader.Load<Sprite>(m_cell.inst.model.sprId);
     cellSprImg.sprite = spr;
+    var rot = Quaternion.identity;
+    switch (m_cell.inst.rot) {
+      case TheFactoryGame.InstRot.UP:
+        break;
+      case TheFactoryGame.InstRot.RIGHT:
+        rot = Quaternion.Euler(0, 0, 90);
+        break;
+      case TheFactoryGame.InstRot.DOWN:
+        rot = Quaternion.Euler(0, 0, 180);
+        break;
+      case TheFactoryGame.InstRot.LEFT:
+        rot = Quaternion.Euler(0, 0, 270);
+        break;
+    }
+    cellSprImg.transform.rotation = rot;
   }
 
   public void EventOnClick() {
