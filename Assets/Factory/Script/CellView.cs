@@ -59,76 +59,11 @@ public class CellView : MonoBehaviour {
 
   private void Draw_Machine()
   {
-    var pipeState = m_cell.inst.data.pipeState;
-
     var spr = sprLoader.Load<Sprite>("machine_str");
-    cellSprImg.sprite = spr;
-    switch (pipeState.inPipeId)
-    {
-      case 0: // up->down
-        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 270);
-        break;
-      case 1: // right->left
-        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 180);
-        break;
-      case 2: // down->up
-        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 90);
-        break;
-      case 3: // left->right
-        // ROT = DEFAULT
-        break;
-      default:
-        break;
-    }
   }
 
   private void Draw_Pipe() {
-    var pipeState = m_cell.inst.data.pipeState;
-    int flag = pipeState.portFlag;
-    if (flag == 0) {
-      var spr = sprLoader.Load<Sprite>("pipe_iso");
-      cellSprImg.sprite = spr;
-    } else {
-      switch (flag) {
-        case 0b1010:
-        case 0b0101:
-        case 0b0001:
-        case 0b0010:
-        case 0b0100:
-        case 0b1000:
-          var strSpr = sprLoader.Load<Sprite>("pipe_str");
-          cellSprImg.sprite = strSpr;
-          switch (flag) {
-            case 0b1010:
-            case 0b0010:
-            case 0b1000:
-              cellSprImg.transform.rotation = Quaternion.identity;
-              break;
-            default:
-              cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 90);
-              break;
-          }
-          break;
-        default:
-          var corSpr = sprLoader.Load<Sprite>("pipe_cor");
-          cellSprImg.sprite = corSpr;
-          switch (flag) {
-            case 0b1100:
-              cellSprImg.transform.rotation = Quaternion.identity;
-              break;
-            case 0b0110:
-              cellSprImg.transform.rotation = Quaternion.Euler(0, 0, -90);
-              break;
-            case 0b0011:
-              cellSprImg.transform.rotation = Quaternion.Euler(0, 0, -180);
-              break;
-            case 0b1001:
-              cellSprImg.transform.rotation = Quaternion.Euler(0, 0, -270);
-              break;
-          }
-          break;
-      }
-    }
+  
   }
 
   private void Draw_Default() {
