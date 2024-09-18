@@ -29,8 +29,6 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public MapInst inst;
     public Vector2Int instOffset;
 
-    public CellPort[] ports = new CellPort[4];
-
     public int drawSeq;
 
     public int x {
@@ -65,7 +63,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
 
     public SeqNumChecker updateSeq;
     public event Action<MapInst, CircuitUpdateContext> onCircuitUpdate;
-
+    public event Action<MapInst> onDelete;
 
     public bool CheckCircuitUpdate(CircuitUpdateContext ctx) {
       if (!updateSeq.Check(ctx.updateSeqNum)) {
@@ -76,16 +74,9 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       return true;
     }
 
-    public IEnumerable<MapInst> FindNeightbors() {
-      foreach (var port in rootCell.ports) {
-        if (port == null) {
-          continue;
-        }
-        var neightbor = port.GetOther(rootCell);
-        if (neightbor != null && neightbor.inst != null) {
-          yield return neightbor.inst;
-        }
-      }
+    public void NotifyDelete() {
+      this.onDelete?.Invoke(this);
+      Instance.m_mapInsts.Remove(instId);
     }
   }
 
@@ -99,24 +90,6 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public string modelId { get; set; }
     public string sprId;
     public MapInstOnAttach onAttach;
-  }
-
-  public class CellPort {
-    public Cell[] cells = new Cell[2];
-
-    public Cell GetOther(Cell cell) {
-      for (int i = 0; i < cells.Length; i++) {
-        if (cells[i] != null && cells[i] != cell) {
-          return cells[i];
-        }
-      }
-      return null;
-    }
-
-    public void Set(Cell cell0, Cell cell1) {
-      cells[0] = cell0;
-      cells[1] = cell1;
-    }
   }
 
   public class Pipe_State {
@@ -153,6 +126,24 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         }
       }
       return false;
+    }
+
+    public void Remove(Pipe_State other) {
+      for (int i = 0; i < connect_pipes.Length; i++) {
+        if (connect_pipes[i] == other) {
+          connect_pipes[i] = null;
+        }
+      }
+    }
+
+    public void OnDelete(MapInst inst) {
+      foreach (var pipe in connect_pipes) {
+        if (pipe == null) {
+          continue;
+        }
+        pipe.Remove(this);
+        this.Remove(pipe);
+      }
     }
 
     public void OnCircuitUpdate(MapInst inst, CircuitUpdateContext ctx) {
@@ -206,17 +197,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public void NotifyUpdate(IEnumerable<MapInst> allInst) {
       updateSeqNum++;
       foreach (var inst in allInst) {
-        if (inst.CheckCircuitUpdate(this)) {
-          queueBuffer.Enqueue(inst);
-          while (queueBuffer.Count > 0) {
-            var next = queueBuffer.Dequeue();
-            foreach (var neightbor in next.FindNeightbors()) {
-              if (neightbor.CheckCircuitUpdate(this)) {
-                queueBuffer.Enqueue(neightbor);
-              }
-            }
-          }
-        }
+        inst.CheckCircuitUpdate(this);
       }
     }
   }
@@ -236,7 +217,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         "pipe",
         new MapInstModel {
           sprId = "pipe",
-          onAttach = InstAttach_Pipe
+          onAttach = InstAttach_Pipe,
         }
       }
     };
@@ -256,7 +237,10 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
 
   public void Start() {
     InitMap();
-    InitCellPorts();
+  }
+
+  public void NotifyUpdateCircuit() {
+    circuitUpdateContext.NotifyUpdate(m_mapInsts.Values);
   }
 
   private void InitMap() {
@@ -276,25 +260,6 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         cellView.SetCell(cell);
 
         m_cells[x, y] = cell;
-      }
-    }
-  }
-
-  private void InitCellPorts() {
-    foreach (var cell in m_cells) {
-      for (int i = 0; i < 4; i++) {
-        if (cell.ports[i] != null) {
-          continue;
-        }
-        var port = new CellPort();
-        var offset = Cell.near4[i];
-        var other = m_cells.SafeGet(cell.pos + offset);
-        if (other == null) {
-          continue;
-        }
-        port.Set(cell, other);
-        cell.ports[i] = port;
-        other.ports[(i + 2) % 4] = port;
       }
     }
   }
@@ -323,12 +288,25 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     cell.NotifyDraw();
   }
 
+  private void DeleteInstOnCell(Cell cell) {
+    if (cell.inst == null) {
+      return;
+    }
+    cell.inst.NotifyDelete();
+    cell.inst = null;
+    NotifyUpdateCircuit();
+    cell.NotifyDraw();
+  }
+
   public void OnCellClick(Cell cell) {
     switch (selectedToolId) {
       case "debug":
         break;
       case "pipe":
         PlantInstOnCell(cell, "pipe");
+        break;
+      case "delete":
+        DeleteInstOnCell(cell);
         break;
       default:
         break;
@@ -346,8 +324,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     };
     inst.data.pipeState = selfPipe;
     inst.onCircuitUpdate += selfPipe.OnCircuitUpdate;
-
+    inst.onDelete += selfPipe.OnDelete;
     circuitUpdateContext.NotifyUpdate(m_mapInsts.Values);
   }
-
 }
