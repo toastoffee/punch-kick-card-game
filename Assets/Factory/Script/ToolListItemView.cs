@@ -17,5 +17,26 @@ public class ToolListItemView : MonoBehaviour {
   public void EventOnClick() {
     TheFactoryGame.Instance.OnToolClick(toolId);
   }
+
+  public void ChangeMachineToolId()
+  {
+    switch (toolId)
+    {
+      case "machine-left-right":
+        toolId = "machine-up-down";
+        break;
+      case "machine-up-down":
+        toolId = "machine-right-left";
+        break;
+      case "machine-right-left":
+        toolId = "machine-down-up";
+        break;
+      case "machine-down-up":
+        toolId = "machine-left-right";
+        break;
+    }
+    text.text = toolId;
+    TheFactoryGame.Instance.OnToolClick(toolId);
+  }
 }
 

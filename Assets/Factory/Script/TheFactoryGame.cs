@@ -316,7 +316,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         new MapInstModel()
         {
           sprId = "machine",
-          onAttach = InstAttach_Machine,
+          onAttach = InstAttach_Pipe,
         }
       }
     };
@@ -376,7 +376,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     return inst;
   }
 
-  private void PlantMachineOnCell(Cell cell)
+  private void PlantMachineOnCell(Cell cell, int inPipeId, int outPipeId)
   {
     if (cell.inst != null) {
       return;
@@ -388,6 +388,9 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     
     inst.model.onAttach?.Invoke(inst);
     cell.NotifyDraw();
+
+    inst.data.pipeState.inPipeId = inPipeId;
+    inst.data.pipeState.outPipeId = outPipeId;
   }
   
   private void PlantInstOnCell(Cell cell, string instModelId) {
@@ -419,8 +422,17 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       case "pipe":
         PlantInstOnCell(cell, "pipe");
         break;
-      case "machine":
-        PlantMachineOnCell(cell);
+      case "machine-left-right":
+        PlantMachineOnCell(cell, 3, 1);
+        break;
+      case "machine-up-down":
+        PlantMachineOnCell(cell, 0, 2);
+        break;
+      case "machine-right-left":
+        PlantMachineOnCell(cell, 1, 3);
+        break;
+      case "machine-down-up": 
+        PlantMachineOnCell(cell, 2, 0);
         break;
       case "delete":
         DeleteInstOnCell(cell);
@@ -438,18 +450,6 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
   private void InstAttach_Pipe(MapInst inst) {
     var selfPipe = new Pipe_State() {
       self = inst
-    };
-    inst.data.pipeState = selfPipe;
-    inst.onCircuitUpdate += selfPipe.OnCircuitUpdate;
-    inst.onDelete += selfPipe.OnDelete;
-    circuitUpdateContext.NotifyUpdate(m_mapInsts.Values);
-  }
-  
-  private void InstAttach_Machine(MapInst inst) {
-    var selfPipe = new Pipe_State() {
-      self = inst,
-      inPipeId = 0,
-      outPipeId = 2,
     };
     inst.data.pipeState = selfPipe;
     inst.onCircuitUpdate += selfPipe.OnCircuitUpdate;

@@ -66,13 +66,13 @@ public class CellView : MonoBehaviour {
     switch (pipeState.inPipeId)
     {
       case 0: // up->down
-        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 90);
+        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 270);
         break;
       case 1: // right->left
         cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 180);
         break;
       case 2: // down->up
-        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 270);
+        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 90);
         break;
       case 3: // left->right
         // ROT = DEFAULT
