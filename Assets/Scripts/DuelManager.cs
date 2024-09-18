@@ -282,7 +282,6 @@ public class DuelManager : MonoBehaviour
             Shuffle(mCardsLibrary);
 
             _mUsedCards = new List<CardType>();
-            DrawCard();
         }
     }
     
@@ -361,14 +360,14 @@ public class DuelManager : MonoBehaviour
             // double attack (2 * 0.25 * pwr)
             float fDmg = 0.25f * _mEnemy.pwr; 
             var d = CauseDamage(fDmg, _mPlayer);
-            //EnemyStealDef(1.0f);
+            EnemyStealDef(1.0f);
             AddLog($"[敌人]使用双重攻击第一击对[玩家]造成{d}点伤害");
-            //AddLog($"[敌人]从[玩家]处偷取了1点防御");
+            AddLog($"[敌人]从[玩家]处偷取了1点防御");
             
             d = CauseDamage(fDmg, _mPlayer);
-            //EnemyStealDef(1.0f);
+            EnemyStealDef(1.0f);
             AddLog($"[敌人]使用双重攻击第二击对[玩家]造成{d}点伤害");
-            //AddLog($"[敌人]从[玩家]处偷取了1点防御");
+            AddLog($"[敌人]从[玩家]处偷取了1点防御");
         }
         else
         {
@@ -471,7 +470,6 @@ public class DuelManager : MonoBehaviour
             _mReverseBuff.SetLastRounds(2);
             AddLog($"[玩家]受到攻击失去“招架”,获得了“逆势”(持续两回合)");
         }
-        
         return iDmg;
     }
 
@@ -546,7 +544,6 @@ public class DuelManager : MonoBehaviour
                 break;
         }
         _mSeq.Add(type);
-        _mUsedCards.Add(type);
         
         _mHandCards.RemoveAt(_mSelectedCardIdx);
         _mSelectedCardIdx = Math.Clamp(_mSelectedCardIdx - 1, 0, _mSelectedCardIdx);

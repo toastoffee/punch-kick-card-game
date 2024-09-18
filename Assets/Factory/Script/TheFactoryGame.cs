@@ -91,9 +91,15 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public string sprId;
     public MapInstOnAttach onAttach;
   }
-
+  
   public class Pipe_State {
+    
     public Pipe_State[] connect_pipes = new Pipe_State[2];
+
+    // machine params
+    public Pipe_State inPipe, outPipe;
+    public int inPipeId, outPipeId;
+    
     public int connectedCnt {
       get {
         var cnt = 0;
@@ -120,57 +126,142 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public SeqNumChecker circuitSeq;
 
     public bool Contain(Pipe_State other) {
-      foreach (var pipe in connect_pipes) {
-        if (pipe == other) {
+      if (self.model.modelId == "pipe")
+      {
+        foreach (var pipe in connect_pipes) {
+          if (pipe == other) {
+            return true;
+          }
+        }
+        return false; 
+      }
+      else if (self.model.modelId == "machine")
+      {
+        if (inPipe == other || outPipe == other)
+        {
           return true;
         }
+        return false;
       }
       return false;
     }
 
     public void Remove(Pipe_State other) {
-      for (int i = 0; i < connect_pipes.Length; i++) {
-        if (connect_pipes[i] == other) {
-          connect_pipes[i] = null;
+
+      if (self.model.modelId == "pipe")
+      {
+        for (int i = 0; i < connect_pipes.Length; i++) {
+          if (connect_pipes[i] == other) {
+            connect_pipes[i] = null;
+          }
+        }  
+      }
+      else if (self.model.modelId == "machine")
+      {
+        if (inPipe == other)
+        {
+          inPipe = null;
+        }
+        if (outPipe == other)
+        {
+          outPipe = null;
         }
       }
+      
     }
 
     public void OnDelete(MapInst inst) {
-      foreach (var pipe in connect_pipes) {
-        if (pipe == null) {
-          continue;
+
+      if (self.model.modelId == "pipe")
+      {
+        foreach (var pipe in connect_pipes) {
+          if (pipe == null) {
+            continue;
+          }
+          pipe.Remove(this);
+          this.Remove(pipe);
         }
-        pipe.Remove(this);
-        this.Remove(pipe);
+      }else if (self.model.modelId == "machine")
+      {
+        if (inPipe != null)
+        {
+          inPipe.Remove(this);
+          this.Remove(inPipe);
+        }
+        if (outPipe != null)
+        {
+          outPipe.Remove(this);
+          this.Remove(outPipe);
+        }
       }
     }
 
     public void OnCircuitUpdate(MapInst inst, CircuitUpdateContext ctx) {
-      portFlag = 0;
-      foreach (var cell in self.rootCell.Near4Area()) {
-        if (connectedCnt >= 2) {
-          break;
-        }
-        if (cell == null) {
-          continue;
-        }
-        if (cell.inst != null && cell.inst.model.modelId == "pipe") {
-          var otherPipe = cell.inst.data.pipeState;
-          if (otherPipe.Contain(this) || otherPipe.connectedCnt >= 2) {
+
+      if (self.model.modelId == "pipe")
+      {
+        portFlag = 0;
+        foreach (var cell in self.rootCell.Near4Area()) {
+          if (connectedCnt >= 2) {
+            break;
+          }
+          if (cell == null) {
             continue;
           }
-          connect_pipes[nextConnectIdx] = otherPipe;
-          otherPipe.connect_pipes[otherPipe.nextConnectIdx] = this;
+          if (cell.inst != null && cell.inst.model.modelId == "pipe") {
+            var otherPipe = cell.inst.data.pipeState;
+            if (otherPipe.Contain(this) || otherPipe.connectedCnt >= 2) {
+              continue;
+            }
+            connect_pipes[nextConnectIdx] = otherPipe;
+            otherPipe.connect_pipes[otherPipe.nextConnectIdx] = this;
+          }
+        }
+        foreach (var pipe in connect_pipes) {
+          if (pipe == null) {
+            continue;
+          }
+          SetPortFlag(pipe.self.rootCell.pos - self.rootCell.pos);
+        }
+        self.rootCell.NotifyDraw();
+      }
+      else if (self.model.modelId == "machine")
+      {
+        int idx = 0;    // up = 0, right = 1, down = 2, left = 3
+        foreach (var cell in self.rootCell.Near4Area()) {
+          if (inPipe != null && outPipe != null) {
+            break;
+          }
+          if (cell == null) {
+            continue;
+          }
+
+          if (cell.inst != null && cell.inst.model.modelId == "pipe")
+          {
+            if (idx == inPipeId && inPipe == null)
+            {
+              var otherPipe = cell.inst.data.pipeState;
+              if (otherPipe.Contain(this) || otherPipe.connectedCnt >= 2) {
+                continue;
+              }
+              inPipe = otherPipe;
+              otherPipe.connect_pipes[otherPipe.nextConnectIdx] = this;
+            } 
+            else if (idx == outPipeId && outPipe == null)
+            {
+              var otherPipe = cell.inst.data.pipeState;
+              if (otherPipe.Contain(this) || otherPipe.connectedCnt >= 2) {
+                continue;
+              }
+              outPipe = otherPipe;
+              otherPipe.connect_pipes[otherPipe.nextConnectIdx] = this;
+            }
+          }
+
+          idx++;
         }
       }
-      foreach (var pipe in connect_pipes) {
-        if (pipe == null) {
-          continue;
-        }
-        SetPortFlag(pipe.self.rootCell.pos - self.rootCell.pos);
-      }
-      self.rootCell.NotifyDraw();
+      
     }
 
     private void SetPortFlag(Vector2Int offset) {
@@ -218,6 +309,14 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         new MapInstModel {
           sprId = "pipe",
           onAttach = InstAttach_Pipe,
+        }
+      },
+      {
+        "machine",
+        new MapInstModel()
+        {
+          sprId = "machine",
+          onAttach = InstAttach_Machine,
         }
       }
     };
@@ -273,9 +372,24 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     };
 
     m_mapInsts.Add(inst.instId, inst);
+    
     return inst;
   }
 
+  private void PlantMachineOnCell(Cell cell)
+  {
+    if (cell.inst != null) {
+      return;
+    }
+
+    var inst = CreatMapInst("machine");
+    cell.inst = inst;
+    inst.rootCell = cell;
+    
+    inst.model.onAttach?.Invoke(inst);
+    cell.NotifyDraw();
+  }
+  
   private void PlantInstOnCell(Cell cell, string instModelId) {
     if (cell.inst != null) {
       return;
@@ -305,6 +419,9 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       case "pipe":
         PlantInstOnCell(cell, "pipe");
         break;
+      case "machine":
+        PlantMachineOnCell(cell);
+        break;
       case "delete":
         DeleteInstOnCell(cell);
         break;
@@ -327,4 +444,17 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     inst.onDelete += selfPipe.OnDelete;
     circuitUpdateContext.NotifyUpdate(m_mapInsts.Values);
   }
+  
+  private void InstAttach_Machine(MapInst inst) {
+    var selfPipe = new Pipe_State() {
+      self = inst,
+      inPipeId = 0,
+      outPipeId = 2,
+    };
+    inst.data.pipeState = selfPipe;
+    inst.onCircuitUpdate += selfPipe.OnCircuitUpdate;
+    inst.onDelete += selfPipe.OnDelete;
+    circuitUpdateContext.NotifyUpdate(m_mapInsts.Values);
+  }
+  
 }

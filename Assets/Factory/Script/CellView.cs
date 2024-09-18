@@ -48,8 +48,36 @@ public class CellView : MonoBehaviour {
       case "pipe":
         Draw_Pipe();
         break;
+      case "machine":
+        Draw_Machine();
+        break;
       default:
         Draw_Default();
+        break;
+    }
+  }
+
+  private void Draw_Machine()
+  {
+    var pipeState = m_cell.inst.data.pipeState;
+
+    var spr = sprLoader.Load<Sprite>("machine_str");
+    cellSprImg.sprite = spr;
+    switch (pipeState.inPipeId)
+    {
+      case 0: // up->down
+        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 90);
+        break;
+      case 1: // right->left
+        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 180);
+        break;
+      case 2: // down->up
+        cellSprImg.transform.rotation = Quaternion.Euler(0, 0, 270);
+        break;
+      case 3: // left->right
+        // ROT = DEFAULT
+        break;
+      default:
         break;
     }
   }
