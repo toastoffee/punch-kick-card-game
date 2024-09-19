@@ -149,7 +149,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       if (sum != 0 && Mathf.Abs(sum) != 1) {
         return false;
       }
-      //引脚之间都是空位s
+      //引脚之间都是空位
       var dirVec = Cell.near8[dir];
       Cell next = cell;
       do {
