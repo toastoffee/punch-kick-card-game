@@ -38,14 +38,21 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public GameObject gameObject;
     public Vector2Int pos;
 
+    //一个cell可能被inst, pin, pinBridge占用
     public MapInst inst;
     public Vector2Int instOffset;
 
     public Pin pin;
 
+    public PinBridge pinBridge;
+
     public CellView cellView;
 
     public int drawSeq;
+
+    public bool isEmpty {
+      get => inst == null && pin == null && pinBridge == null;
+    }
 
     public int x {
       get => pos.x; set => pos.x = value;
@@ -106,33 +113,67 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
       Output = 1,
       Input = -1,
     }
+    public struct CheckConnectResult {
+      public bool success;
+      public int dir;
+      public List<Cell> overlayCells;
+    }
+
     public MapInst parentInst;
     public Cell cell;
     public int pinDisableMask;
     public PinBridge[] pinBridges = new PinBridge[8];
     public Polar polar;
 
-    public bool CanConnect(Pin other) {
+    public bool CanConnect(Pin other, out CheckConnectResult res) {
+      res = new CheckConnectResult() {
+        overlayCells = new List<Cell>(),
+      };
+      //在方向上
       var dir = CheckOn8Dir(cell.pos, other.cell.pos);
       if (dir < 0) {
         return false;
       }
+      //方向没有被禁用
       if (CheckFlag(pinDisableMask, dir) || CheckFlag(other.pinDisableMask, (dir + 4) % 8)) {
         return false;
       }
-
-      var sum = (int)polar + (int)other.polar;
-      if (sum == 0 || Mathf.Abs(sum) == 1) {
-        return true;
+      //并非已连接
+      foreach (var pinBridge in pinBridges) {
+        if (pinBridge != null && pinBridge.Contain(other)) {
+          return false;
+        }
       }
-      return false;
+      //极性正确
+      var sum = (int)polar + (int)other.polar;
+      if (sum != 0 && Mathf.Abs(sum) != 1) {
+        return false;
+      }
+      //引脚之间都是空位s
+      var dirVec = Cell.near8[dir];
+      Cell next = cell;
+      do {
+        next = Instance.m_cells.SafeGet(next.pos + dirVec);
+        if (next == null) {
+          return false;
+        }
+        if (next.pin == other) {
+          break;
+        }
+        if (!next.isEmpty) {
+          return false;
+        }
+        res.overlayCells.Add(next);
+      } while (next != null);
+      res.success = true;
+      return true;
     }
 
-    public void Connect(Pin other) {
-      if (!CanConnect(other)) {
+    public void Connect(Pin other, CheckConnectResult result) {
+      if (!result.success) {
         return;
       }
-      var bridge = PinBridge.Create(this, other);
+      var bridge = PinBridge.Create(this, other, result);
     }
   }
 
@@ -140,7 +181,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     var delta = (Vector2)(to - from);
     for (int i = 0; i < 8; i++) {
       var dir = Cell.near8[i];
-      if (Vector2.Dot(delta, dir) == 0) {
+      if (Vector2.SignedAngle(delta, dir) == 0) {
         return i;
       }
     }
@@ -182,8 +223,8 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     }
 
     private PinBridge() { }
-    public static PinBridge Create(Pin pin0, Pin pin1) {
-      if (!pin0.CanConnect(pin1)) {
+    public static PinBridge Create(Pin pin0, Pin pin1, Pin.CheckConnectResult checkRes) {
+      if (!checkRes.success) {
         throw new Exception("Check Connectable first");
       }
       var ret = new PinBridge() {
@@ -191,8 +232,15 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         pin1 = pin1,
       };
       ret.Refresh();
+      foreach (var cell in checkRes.overlayCells) {
+        cell.pinBridge = ret;
+      }
       Instance.CreatePinBridgeView(ret);
       return ret;
+    }
+
+    public bool Contain(Pin pin) {
+      return pin0 == pin || pin1 == pin;
     }
 
     public void Refresh() {
@@ -346,8 +394,8 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         break;
       case "connecting":
         selectedToolId = string.Empty;
-        if (connectingSourcePin.CanConnect(cell.pin)) {
-          connectingSourcePin.Connect(cell.pin);
+        if (connectingSourcePin.CanConnect(cell.pin, out var res)) {
+          connectingSourcePin.Connect(cell.pin, res);
         }
         break;
       case "": //string.empty
