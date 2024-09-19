@@ -125,7 +125,15 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     public PinBridge[] pinBridges = new PinBridge[8];
     public Polar polar;
 
-    public bool CanConnect(Pin other, out CheckConnectResult res) {
+    private Pin() { }
+    public static Pin Create(Cell cell) {
+      var ret = new Pin();
+      ret.cell = cell;
+      cell.pin = ret;
+      return ret;
+    }
+
+    public bool CheckConnect(Pin other, out CheckConnectResult res) {
       res = new CheckConnectResult() {
         overlayCells = new List<Cell>(),
       };
@@ -271,12 +279,15 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
 
   public Dictionary<string, MapInstModel> mapInstModel;
 
+  #region ModelTable
   private void InitModel() {
     mapInstModel = new Dictionary<string, MapInstModel>() {
       {
         "machine_1",
         new MapInstModel {
-          sprId = "machine_1"
+          sprId = "machine_1",
+          onAttach = InstAttach_Machine,
+          onClick = InstClick_Machine
         }
       },
       {
@@ -291,6 +302,7 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     };
     SetModelId(mapInstModel);
   }
+  #endregion
 
   private void SetModelId<T>(Dictionary<string, T> modelTable) where T : IModel {
     foreach (var pair in modelTable) {
@@ -394,9 +406,12 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
         break;
       case "connecting":
         selectedToolId = string.Empty;
-        if (connectingSourcePin.CanConnect(cell.pin, out var res)) {
+        if (connectingSourcePin.CheckConnect(cell.pin, out var res)) {
           connectingSourcePin.Connect(cell.pin, res);
         }
+        break;
+      case "extending":
+        TryExtendAtCell(cell);
         break;
       case "": //string.empty
         if (cell.inst == null) {
@@ -409,18 +424,50 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     }
   }
 
+  private void TryExtendAtCell(Cell cell) {
+    Pin destPin = null;
+    if (cell.isEmpty) {
+      destPin = Pin.Create(cell);
+    } else if (cell.pin != null) {
+      destPin = cell.pin;
+    } else {
+      return;
+    }
+
+    if (!connectingSourcePin.CheckConnect(destPin, out var res)) {
+      selectedToolId = string.Empty;
+      connectingSourcePin.cell.pin = null;
+      connectingSourcePin = null;
+      return;
+    }
+
+    //pin的inst会直接从cell上获取这个预先放置的pin
+    connectingSourcePin.Connect(destPin, res);
+    connectingSourcePin = destPin;
+    PlantInstOnCell(cell, "pin", InstRot.UP);
+  }
+
   public void OnToolClick(string toolId) {
     selectedToolId = toolId;
   }
 
   private void InstAttach_Pin(MapInst inst) {
-    var pin = new Pin();
-    pin.cell = inst.rootCell;
-    inst.rootCell.pin = pin;
+    if (inst.rootCell.pin == null) {
+      Pin.Create(inst.rootCell);
+    }
+  }
+
+  private void InstAttach_Machine(MapInst inst) {
+    Pin.Create(inst.rootCell);
   }
 
   private void InstClick_Pin(MapInst inst, Cell cell) {
     connectingSourcePin = cell.pin;
     selectedToolId = "connecting";
+  }
+
+  private void InstClick_Machine(MapInst inst, Cell cell) {
+    connectingSourcePin = cell.pin;
+    selectedToolId = "extending";
   }
 }
