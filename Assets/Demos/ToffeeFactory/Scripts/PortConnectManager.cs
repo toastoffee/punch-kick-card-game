@@ -1,5 +1,4 @@
 using System;
-using ToffeeFactory.ToffeeFactory;
 using UnityEngine;
 
 namespace ToffeeFactory {
