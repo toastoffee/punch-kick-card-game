@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace ToffeeFactory {
@@ -11,9 +12,11 @@ namespace ToffeeFactory {
     public List<Port> outPorts;
 
     public List<Storage> inContains;
-
+    public List<TMP_Text> inContainTexts;
+    
     public List<Storage> outContains;
-
+    public List<TMP_Text> outContainTexts;
+    
     // define the formula
     public float produceInterval;
     public List<Ingredient> ingredients;
@@ -22,6 +25,16 @@ namespace ToffeeFactory {
     private float produceCounter;
     private List<float> pipeCounter;
 
+    private void UpdateContainerTexts() {
+      for (int i = 0; i < inContains.Count; i++) {
+        inContainTexts[i].text = $"{inContains[i].name}:{inContains[i].count}/{inContains[i].max}";
+      }
+      for (int i = 0; i < outContains.Count; i++) {
+        outContainTexts[i].text = $"{outContains[i].name}:{outContains[i].count}/{outContains[i].max}";
+      }
+
+    }
+    
     private bool CheckIngredientReady() {
       foreach (var ingredient in ingredients) {
         if (!CheckIngredient(ingredient)) {
@@ -93,6 +106,8 @@ namespace ToffeeFactory {
     }
 
     private void Update() {
+      
+      UpdateContainerTexts();
       
       // produce own product
       if (!IsStorageFull() && CheckIngredientReady()) {
