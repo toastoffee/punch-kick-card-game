@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-class Unit
+namespace KungFuCards {
+  class Unit
 {
     public int hp;
     public float def, pwr;
@@ -658,4 +659,6 @@ public class DuelManager : MonoBehaviour
         _mOverloadBuff.SetLastRounds(1);
         AddLog($"[玩家]使用过载，行动点+2，下回合行动点-2");
     }
+}
+
 }

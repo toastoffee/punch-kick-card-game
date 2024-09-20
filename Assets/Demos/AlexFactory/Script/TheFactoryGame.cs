@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using static TheFactoryGame;
+using static AlexFactory.TheFactoryGame;
 
-public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
+namespace AlexFactory {
+  public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
   public RectTransform cellContainer;
   public GameObject cellPrefab;
   public Vector2Int mapSize;
@@ -470,4 +471,5 @@ public class TheFactoryGame : MonoSingleton<TheFactoryGame> {
     connectingSourcePin = cell.pin;
     selectedToolId = "extending";
   }
+}
 }
