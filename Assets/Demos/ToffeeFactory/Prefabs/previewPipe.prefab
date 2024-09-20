@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1993429952026020547}
   - component: {fileID: 6978771710161906132}
   m_Layer: 0
-  m_Name: connection Pipe
+  m_Name: previewPipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ae24b4166982f474093fcdbf61e2668f, type: 2}
+  - {fileID: 2100000, guid: c0166f0197b45475894825cacce24e7a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

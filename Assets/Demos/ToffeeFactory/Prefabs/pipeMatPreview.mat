@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pipeMat
+  m_Name: pipeMatPreview
   m_Shader: {fileID: -6465566751694194690, guid: e5c5788d4c3c84bf0a9ed824bc50e2e9, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -56,12 +56,14 @@ Material:
     - _EnableExternalAlpha: 0
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _blendRatio: 0.9
+    - _flowRate: 1.5
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
-    - _endColor: {r: 1, g: 0, b: 0.009498596, a: 0}
-    - _startColor: {r: 0.07456994, g: 1, b: 0, a: 0}
+    - _endColor: {r: 0.3207547, g: 0.3207547, b: 0.3207547, a: 0}
+    - _startColor: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7759107830613523763
 MonoBehaviour:
