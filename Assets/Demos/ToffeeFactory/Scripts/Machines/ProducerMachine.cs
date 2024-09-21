@@ -199,6 +199,7 @@ namespace ToffeeFactory {
           if (outPorts[i].isConnected && outPorts[i].connectedPort.affiliated.ReceiveIngredient(load)) {
             outContains[i].count -= 1;
             pipeCounter[i] = 0f;
+            OutContainerTextShake();
           }
         }
       }
