@@ -74,7 +74,7 @@ namespace ToffeeFactory {
       if (isHandlingConnecting) {
         Vector3 mousePosition = Input.mousePosition;
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.nearClipPlane));
-        worldPosition.Set(worldPosition.x, worldPosition.y, 90f);
+        worldPosition.Set(worldPosition.x, worldPosition.y, 0f);
 
         Vector3[] poses = BeautifyPath(m_portInConnecting.transform.position, worldPosition, 0.25f);
 
