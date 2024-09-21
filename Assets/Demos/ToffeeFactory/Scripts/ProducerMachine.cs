@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -12,10 +13,8 @@ namespace ToffeeFactory {
     public List<Port> outPorts;
 
     public List<Storage> inContains;
-    public List<TMP_Text> inContainTexts;
     
     public List<Storage> outContains;
-    public List<TMP_Text> outContainTexts;
     
     // define the formula
     public float produceInterval;
@@ -25,12 +24,23 @@ namespace ToffeeFactory {
     private float produceCounter;
     private List<float> pipeCounter;
 
+    [SerializeField]
+    private LoadingBar loadingBar;
+
+    [SerializeField]
+    private TMP_Text equationText;
+
+    [SerializeField]
+    private Transform icon;
+
     private void UpdateContainerTexts() {
       for (int i = 0; i < inContains.Count; i++) {
-        inContainTexts[i].text = $"{inContains[i].name}:{inContains[i].count}/{inContains[i].max}";
+        inPorts[i].typeText.text = inContains[i].name;
+        inPorts[i].countText.text = $"{inContains[i].count}/{inContains[i].max}";
       }
       for (int i = 0; i < outContains.Count; i++) {
-        outContainTexts[i].text = $"{outContains[i].name}:{outContains[i].count}/{outContains[i].max}";
+        outPorts[i].typeText.text = outContains[i].name;
+        outPorts[i].countText.text = $"{outContains[i].count}/{outContains[i].max}";
       }
 
     }
@@ -85,6 +95,57 @@ namespace ToffeeFactory {
         AddIngredient(load);
       }
       
+      IconShake();
+      InContainerTextShake();
+      OutContainerTextShake();
+    }
+
+
+    private void IconShake() {
+      Sequence sequence = DOTween.Sequence();
+      sequence.Append(icon.DOScale(new Vector3(1.3f, 0.8f, 1f), 0.1f));
+      sequence.Append(icon.DOScale( new Vector3(0.8f, 1.3f, 1f), 0.1f));
+      sequence.Append(icon.DOScale( new Vector3(1f, 1f, 1f), 0.1f));
+    }
+
+    private void InContainerTextShake() {
+      for (int i = 0; i < inContains.Count; i++) {
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(inPorts[i].countText.transform.DOScale(new Vector3(1.2f, 0.9f, 1f), 0.08f));
+        sequence.Append(inPorts[i].countText.transform.DOScale( new Vector3(0.9f, 1.2f, 1f), 0.08f));
+        sequence.Append(inPorts[i].countText.transform.DOScale( new Vector3(1f, 1f, 1f), 0.08f));
+      }
+    }
+    
+    private void OutContainerTextShake() {
+      for (int i = 0; i < outContains.Count; i++) {
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(outPorts[i].countText.transform.DOScale(new Vector3(1.2f, 0.9f, 1f), 0.08f));
+        sequence.Append(outPorts[i].countText.transform.DOScale( new Vector3(0.9f, 1.2f, 1f), 0.08f));
+        sequence.Append(outPorts[i].countText.transform.DOScale( new Vector3(1f, 1f, 1f), 0.08f));
+      }
+    }
+
+    private void UpdateEquationText() {
+      string equation = "";
+      for (int i = 0; i < ingredients.Count; i++) {
+        equation += $"{ingredients[i].count} {IngredientQuery.Instance.GetRichText(ingredients[i].name)} ";
+
+        if (i != ingredients.Count - 1) {
+          equation += "+ ";
+        }
+      }
+      equation += "= ";
+      
+      for (int i = 0; i < produces.Count; i++) {
+        equation += $"{produces[i].count} {IngredientQuery.Instance.GetRichText(produces[i].name)} ";
+
+        if (i != produces.Count - 1) {
+          equation += "+ ";
+        }
+      }
+
+      equationText.text = equation;
     }
     
     private void Start() {
@@ -103,15 +164,19 @@ namespace ToffeeFactory {
       
       produceCounter = 0;
       pipeCounter = new List<float>(outPorts.Count){0};
+      
+      UpdateEquationText();
     }
 
     private void Update() {
       
       UpdateContainerTexts();
-      
+
+      loadingBar.SetPaused();
       // produce own product
       if (!IsStorageFull() && CheckIngredientReady()) {
         produceCounter += Time.deltaTime;
+        loadingBar.SetBarState(produceCounter, produceInterval);
 
         if (produceCounter > produceInterval) {
           produceCounter = 0f;
@@ -139,10 +204,11 @@ namespace ToffeeFactory {
       }
       
     }
-
+    
     public override bool ReceiveIngredient(Ingredient ingredient) {
       foreach (var sto in inContains) {
         if (sto.TryAdd(ingredient)) {
+          InContainerTextShake();
           return true;
         }
       }

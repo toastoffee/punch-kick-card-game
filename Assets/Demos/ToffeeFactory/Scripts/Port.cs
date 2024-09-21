@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -32,6 +33,8 @@ namespace ToffeeFactory {
     [SerializeField]
     private float hoverSwellDuration, pressedShrinkDuration, recoverDuration;
 
+    public TMP_Text typeText, countText;
+    
     private void Start() {
       spr.sprite = unConnectSprite;
     }
