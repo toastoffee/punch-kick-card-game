@@ -14,7 +14,7 @@ namespace ToffeeFactory {
     private Transform solid;
 
     public void SetPaused() {
-      timeText.text = "PAUSE";
+      timeText.text = "生产中止";
       solid.transform.localScale = new Vector3(0f, 1f, 1f);
     }
   

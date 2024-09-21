@@ -35,11 +35,11 @@ namespace ToffeeFactory {
 
     private void UpdateContainerTexts() {
       for (int i = 0; i < inContains.Count; i++) {
-        inPorts[i].typeText.text = inContains[i].name;
+        inPorts[i].typeText.text = IngredientQuery.Instance.GetRichText(inContains[i].name);
         inPorts[i].countText.text = $"{inContains[i].count}/{inContains[i].max}";
       }
       for (int i = 0; i < outContains.Count; i++) {
-        outPorts[i].typeText.text = outContains[i].name;
+        outPorts[i].typeText.text = IngredientQuery.Instance.GetRichText(outContains[i].name);
         outPorts[i].countText.text = $"{outContains[i].count}/{outContains[i].max}";
       }
 
