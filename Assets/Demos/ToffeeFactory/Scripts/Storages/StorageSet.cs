@@ -65,6 +65,46 @@ namespace ToffeeFactory {
     private Vector3 NextViewPos(int idx) {
       return transform.position + idx * viewInterval * Vector3.right;
     }
+
+    public void TryAdd(StuffLoad load) {
+      foreach (var storage in _storages) {
+        storage.TryAdd(load);
+      }
+    }
+
+    public void TryConsume(StuffLoad load) {
+      foreach (var storage in _storages) {
+        storage.TryConsume(load);
+      }
+    }
+
+    public bool IsSufficient(StuffLoad load) {
+      var copy = load.Copy();
+      foreach (var storage in _storages) {
+        storage.TryProvide(copy);
+      }
+      
+      if (copy.count == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    public bool IsSpaceRemained(StuffLoad load) {
+      var copy = load.Copy();
+      
+      foreach (var storage in _storages) {
+        storage.TryContain(copy);
+      }
+
+      if (copy.count != load.count) {
+        return true;
+      } else {
+        return false;
+      }
+      
+    }
     
     public void Clear() {
       foreach (var storage in _storages) {

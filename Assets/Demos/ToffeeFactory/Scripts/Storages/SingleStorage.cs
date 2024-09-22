@@ -29,7 +29,11 @@ namespace ToffeeFactory {
       _count = 0;
     }
 
-    public void TryAdd(ref StuffLoad load) {
+    public void TryAdd(StuffLoad load) {
+      if (load.count == 0) {
+        return;
+      }
+      
       // if type is restricted => must be the same type
       if (_typeRestrict) {
         if (_type == load.type && !isFull) {
@@ -56,7 +60,11 @@ namespace ToffeeFactory {
       }
     }
 
-    public void TryConsume(ref StuffLoad load) {
+    public void TryConsume(StuffLoad load) {
+      if (load.count == 0) {
+        return;
+      }
+      
       if (_type == load.type && !isEmpty) {
           
         // consume amount
@@ -65,6 +73,43 @@ namespace ToffeeFactory {
           
         // modify load
         load.count -= consumeAmount;
+      }
+    }
+
+    public void TryProvide(StuffLoad load) {
+      if (load.count == 0) {
+        return;
+      }
+      
+      if (_type == load.type && !isEmpty) {
+        // provide amount
+        int provideAmount = Math.Min(_count, load.count);
+        
+        // modify load
+        load.count -= provideAmount;
+      }
+    }
+
+    public void TryContain(StuffLoad load) {
+      if (load.count == 0) {
+        return;
+      }
+      
+      // if type is restricted => must be the same type
+      if (_typeRestrict) {
+        if (_type == load.type && !isFull) {
+
+          // modify load
+          int containAmount = Math.Min(leftCapacity, load.count);
+          load.count -= containAmount;
+        }
+      } else { // else => type same OR empty
+        if (isEmpty || (_type == load.type && !isFull)) {
+
+          // modify load
+          int containAmount = Math.Min(leftCapacity, load.count);
+          load.count -= containAmount;
+        }  
       }
     }
 

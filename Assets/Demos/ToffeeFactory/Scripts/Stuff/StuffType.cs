@@ -1,7 +1,8 @@
+using System;
 using UnityEngine;
 
 namespace ToffeeFactory {
-  [SerializeField]
+  [Serializable]
   public enum StuffType {
     NONE,
     

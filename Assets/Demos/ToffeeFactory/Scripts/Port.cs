@@ -22,6 +22,9 @@ namespace ToffeeFactory {
     public Machine affiliated = null;
 
     [SerializeField]
+    public AdvancedMachine machineBelong;
+
+    [SerializeField]
     private SpriteRenderer spr;
 
     [SerializeField]
