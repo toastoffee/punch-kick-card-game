@@ -5,8 +5,9 @@ namespace ToffeeFactory {
   
   [Serializable]
   public class ProduceFormula {
-    public float produceInterval;
 
+    public FormulaFamily family;
+    public float produceInterval;
     public List<StuffLoad> ingredients;
     public List<StuffLoad> products;
 

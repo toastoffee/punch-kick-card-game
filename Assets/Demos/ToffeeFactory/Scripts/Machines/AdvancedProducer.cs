@@ -39,6 +39,11 @@ namespace ToffeeFactory {
       foreach (var port in outPorts) {
         port.machineBelong = this;
       }
+
+    }
+
+    private void SetFormula(ProduceFormula f) {
+      formula = f;
       
       // set restrict storage set
       storageSet.SetStorageSize(inPorts.Count + outPorts.Count);
@@ -50,7 +55,6 @@ namespace ToffeeFactory {
       // reset counters
       produceCounter = 0f;
       outPortCounters = new List<float>(outPorts.Count) { 0 };
-
     }
 
     private void Update() {
