@@ -670,7 +670,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 1000, y: 1000, z: 1}
+  m_LocalScale: {x: 1200, y: 1200, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1092,7 +1092,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f815256c12c541fba559a994f745543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zoomSpeed: 80
+  zoomSpeed: 300
 --- !u!1 &1437280100
 GameObject:
   m_ObjectHideFlags: 0
