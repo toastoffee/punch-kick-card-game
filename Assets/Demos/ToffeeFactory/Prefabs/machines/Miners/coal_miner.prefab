@@ -257,6 +257,7 @@ MonoBehaviour:
   m_type: 1
   connectPipe: {fileID: 0}
   affiliated: {fileID: 0}
+  machineBelong: {fileID: 0}
   spr: {fileID: 7396827417182320447}
   unConnectSprite: {fileID: 21300000, guid: 3962a4e599ca249f3b7ddff7e16f2fe5, type: 3}
   connectSprite: {fileID: 21300000, guid: b5c9b4d417f5e4f77b59ca1e383b09f1, type: 3}
@@ -693,6 +694,7 @@ MonoBehaviour:
   m_type: 0
   connectPipe: {fileID: 0}
   affiliated: {fileID: 0}
+  machineBelong: {fileID: 0}
   spr: {fileID: 8808556275236091715}
   unConnectSprite: {fileID: 21300000, guid: 3962a4e599ca249f3b7ddff7e16f2fe5, type: 3}
   connectSprite: {fileID: 21300000, guid: b5c9b4d417f5e4f77b59ca1e383b09f1, type: 3}
@@ -1965,7 +1967,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190f8988c05804e4bb72cd4ec3f9b2ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorOffset: {x: 0, y: 0}
+  anchorOffset: {x: 0.5, y: 0}
+  occupySize: {x: 2, y: 1}
+  isPlacing: 0
 --- !u!1 &8518818567632297691
 GameObject:
   m_ObjectHideFlags: 0

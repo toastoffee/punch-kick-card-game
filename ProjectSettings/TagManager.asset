@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Occupy
   - 
   - 
   - 
@@ -38,6 +38,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: InfGrid
+    uniqueID: 108880919
+    locked: 0
+  - name: Occupy
+    uniqueID: 1428274873
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
