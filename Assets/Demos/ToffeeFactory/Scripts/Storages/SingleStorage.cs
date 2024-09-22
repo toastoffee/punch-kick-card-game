@@ -4,12 +4,12 @@ namespace ToffeeFactory {
   public class SingleStorage {
 
     private bool _typeRestrict = false;   
-    private string _type;
+    private StuffType _type;
     private int _capacity;
     private int _count;
 
     public bool typeRestrict => _typeRestrict;
-    public string type => _type;
+    public StuffType type => _type;
     public int capacity => _capacity;
     public int count => _count;
     public bool isFull => _count == _capacity;
@@ -18,22 +18,22 @@ namespace ToffeeFactory {
       
     public SingleStorage(int max) {
       _typeRestrict = false;
-      _type = "";
+      _type = StuffType.NONE;
       _capacity = max;
       _count = 0;
     }
 
-    public void SetRestrictType(string restrictType) {
+    public void SetRestrictType(StuffType restrictType) {
       _typeRestrict = true;
       _type = restrictType;
       _count = 0;
     }
 
-    public void TryAdd(ref Ingredient load) {
+    public void TryAdd(ref StuffLoad load) {
       // if type is restricted => must be the same type
       if (_typeRestrict) {
-        if (_type == load.name && !isFull) {
-          _type = load.name;
+        if (_type == load.type && !isFull) {
+          _type = load.type;
 
           // add amount
           int addAmount = Math.Min(leftCapacity, load.count);
@@ -43,8 +43,8 @@ namespace ToffeeFactory {
           load.count -= addAmount;
         }
       } else {  // else => type same OR empty
-        if (isEmpty || (_type == load.name && !isFull)) {
-          _type = load.name;
+        if (isEmpty || (_type == load.type && !isFull)) {
+          _type = load.type;
 
           // add amount
           int addAmount = Math.Min(leftCapacity, load.count);
@@ -56,8 +56,8 @@ namespace ToffeeFactory {
       }
     }
 
-    public void TryConsume(ref Ingredient load) {
-      if (_type == load.name && !isEmpty) {
+    public void TryConsume(ref StuffLoad load) {
+      if (_type == load.type && !isEmpty) {
           
         // consume amount
         int consumeAmount = Math.Min(_count, load.count);

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 namespace ToffeeFactory {
-  public class SingleStorageView {
+  public class SingleStorageView : MonoBehaviour {
 
     [SerializeField]
     private TMP_Text typeText, countText;
@@ -10,7 +10,7 @@ namespace ToffeeFactory {
     public void UpdateDisplay(SingleStorage storage) {
 
       if (storage.typeRestrict) {
-        typeText.text = storage.type;
+        typeText.text = "storage.type";
         countText.text = $"{storage.count}/{storage.capacity}"; 
       } else {
         typeText.text = "";

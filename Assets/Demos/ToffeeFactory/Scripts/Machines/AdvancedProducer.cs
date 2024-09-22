@@ -14,6 +14,7 @@ namespace ToffeeFactory {
 
     private void Start() {
       storageSet.SetStorageSize(inPorts.Count + outPorts.Count);
+      
     }
     
     public override bool ReceiveStuffLoad(StuffLoad load) {
