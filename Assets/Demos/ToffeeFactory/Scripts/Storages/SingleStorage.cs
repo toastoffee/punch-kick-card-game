@@ -8,6 +8,7 @@ namespace ToffeeFactory {
     private int _capacity;
     private int _count;
 
+    public bool typeRestrict => _typeRestrict;
     public string type => _type;
     public int capacity => _capacity;
     public int count => _count;
@@ -29,16 +30,30 @@ namespace ToffeeFactory {
     }
 
     public void TryAdd(ref Ingredient load) {
-      if (_count == 0 || (_type == load.name && !isFull)) {
-        _type = load.name;
+      // if type is restricted => must be the same type
+      if (_typeRestrict) {
+        if (_type == load.name && !isFull) {
+          _type = load.name;
 
-        // add amount
-        int addAmount = Math.Min(leftCapacity, load.count);
-        _count += addAmount;
+          // add amount
+          int addAmount = Math.Min(leftCapacity, load.count);
+          _count += addAmount;
 
-        // modify load
-        load.count -= addAmount;
-      } 
+          // modify load
+          load.count -= addAmount;
+        }
+      } else {  // else => type same OR empty
+        if (isEmpty || (_type == load.name && !isFull)) {
+          _type = load.name;
+
+          // add amount
+          int addAmount = Math.Min(leftCapacity, load.count);
+          _count += addAmount;
+
+          // modify load
+          load.count -= addAmount;
+        }  
+      }
     }
 
     public void TryConsume(ref Ingredient load) {

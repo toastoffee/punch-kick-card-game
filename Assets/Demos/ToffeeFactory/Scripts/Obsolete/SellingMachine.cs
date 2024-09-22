@@ -5,7 +5,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
 
-namespace ToffeeFactory {
+namespace ToffeeFactory.Obsolete {
   public class SellingMachine : Machine {
     [Serializable]
     public class Price {

@@ -4,7 +4,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
-namespace ToffeeFactory {
+namespace ToffeeFactory.Obsolete {
   
   public class ProducerMachine : Machine {
 

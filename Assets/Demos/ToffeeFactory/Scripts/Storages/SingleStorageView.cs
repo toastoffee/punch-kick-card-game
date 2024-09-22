@@ -8,8 +8,14 @@ namespace ToffeeFactory {
     private TMP_Text typeText, countText;
 
     public void UpdateDisplay(SingleStorage storage) {
-      typeText.text = storage.type;
-      countText.text = $"{storage.count}/{storage.capacity}";
+
+      if (storage.typeRestrict) {
+        typeText.text = storage.type;
+        countText.text = $"{storage.count}/{storage.capacity}"; 
+      } else {
+        typeText.text = "";
+        countText.text = "";
+      }
     }
     
   }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 namespace ToffeeFactory {
-  public class AdvancedProducer : Machine {
+  public class AdvancedProducer : AdvancedMachine {
     
     public List<Port> inPorts;
     public List<Port> outPorts;
@@ -15,9 +15,9 @@ namespace ToffeeFactory {
     private void Start() {
       storageSet.SetStorageSize(inPorts.Count + outPorts.Count);
     }
-
-    public override bool ReceiveIngredient(Ingredient ingredient) {
-      throw new System.NotImplementedException();
+    
+    public override bool ReceiveStuffLoad(StuffLoad load) {
+      throw new NotImplementedException();
     }
   } 
 }

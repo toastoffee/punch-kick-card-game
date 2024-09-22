@@ -10,5 +10,6 @@ namespace ToffeeFactory {
     public static float pipeInterval = 0.5f;
 
     public abstract bool ReceiveIngredient(Ingredient ingredient);
+    
   }
 }

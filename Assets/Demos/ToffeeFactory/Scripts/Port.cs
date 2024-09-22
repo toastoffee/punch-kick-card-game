@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace ToffeeFactory {
 
-  public class Port : MonoBehaviour , IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler{
+  public class Port : MonoBehaviour , IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
   
     [SerializeField] private PortType m_type;
     
