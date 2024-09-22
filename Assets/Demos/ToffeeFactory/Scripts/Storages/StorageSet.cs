@@ -56,7 +56,7 @@ namespace ToffeeFactory {
       }
       
       // add under-count views
-      for (int i = _storageViews.Count-1; i < size; i++) {
+      for (int i = _storageViews.Count; i < size; i++) {
         var newView = Instantiate(viewPrefab, NextViewPos(i), Quaternion.identity);
         _storageViews.Add(newView);
       }
@@ -67,19 +67,28 @@ namespace ToffeeFactory {
     }
 
     public void TryAdd(StuffLoad load) {
+      var copy = load.Copy();
+      
       foreach (var storage in _storages) {
-        storage.TryAdd(load);
+        storage.TryAdd(copy);
       }
+      
+      UpdateViews();
     }
 
     public void TryConsume(StuffLoad load) {
+      var copy = load.Copy();
+      
       foreach (var storage in _storages) {
-        storage.TryConsume(load);
+        storage.TryConsume(copy);
       }
+      
+      UpdateViews();
     }
 
     public bool IsSufficient(StuffLoad load) {
       var copy = load.Copy();
+      
       foreach (var storage in _storages) {
         storage.TryProvide(copy);
       }

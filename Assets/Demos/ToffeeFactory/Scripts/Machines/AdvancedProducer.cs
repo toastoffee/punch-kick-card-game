@@ -15,6 +15,8 @@ namespace ToffeeFactory {
     private StorageSet storageSet;
 
     [SerializeField]
+    private FormulaFamily producerType;
+    [SerializeField]
     private ProduceFormula formula;
 
     private float produceCounter;
@@ -28,7 +30,9 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private Transform icon;
-    
+
+    [SerializeField]
+    private int testFormulaIdx;
     
     private void Start() {
       
@@ -40,6 +44,8 @@ namespace ToffeeFactory {
         port.machineBelong = this;
       }
 
+      SetFormula(FormulaLibrary.Instance.GetFormulasOfFamily(producerType)[testFormulaIdx]);
+      
     }
 
     private void SetFormula(ProduceFormula f) {
@@ -60,7 +66,7 @@ namespace ToffeeFactory {
     private void Update() {
 
       // produce
-      if (IsIngredientsSufficient() && !IsStorageFullForProducts()) {
+      if (IsIngredientsSufficient() && IsStorageRemainForProducts()) {
         produceCounter += Time.deltaTime;
         loadingBar.SetBarState(produceCounter, formula.produceInterval);
 
@@ -122,7 +128,7 @@ namespace ToffeeFactory {
       return true;
     }
     
-    private bool IsStorageFullForProducts() {
+    private bool IsStorageRemainForProducts() {
       foreach (var product in formula.products) {
         if (storageSet.IsSpaceRemained(product)) {
           return true;

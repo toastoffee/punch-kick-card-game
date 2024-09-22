@@ -6,8 +6,14 @@ namespace ToffeeFactory {
   public enum StuffType {
     NONE,
     
-    OreMine,
+    IronMine,
     CoalMine,
     CooperMine,
+    
+    IronOre,
+    CoalOre,
+    CooperOre,
+    
+    IronIngot,
   }
 }
