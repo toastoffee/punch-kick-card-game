@@ -9,18 +9,26 @@ namespace ToffeeFactory {
   public class Status : MonoSingleton<Status> {
     [SerializeField]
     private TMP_Text moneyText;
-    private int money;
+    public int money;
 
     private Tween moneyTextPunchTween;
 
     public void AddMoney(int add) {
       money += add;
-      moneyText.text = money.ToString();
       if (moneyTextPunchTween != null) {
         moneyTextPunchTween.Kill(complete: true);
       }
 
       moneyTextPunchTween = moneyText.transform.DOPunchScale(0.15f * Vector3.one, 0.3f);
+    }
+
+    public bool CanAfford(int cost) => cost <= money;
+
+    public void RemoveMoney(int cost) {
+      AddMoney(-cost);
+    }
+    public void Update() {
+      moneyText.text = money.ToString();
     }
   }
 }

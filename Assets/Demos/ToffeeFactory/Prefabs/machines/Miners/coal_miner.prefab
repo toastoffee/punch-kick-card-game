@@ -1870,6 +1870,7 @@ GameObject:
   - component: {fileID: 6623684942736159374}
   - component: {fileID: 4993900887178774912}
   - component: {fileID: 6659106185908161738}
+  - component: {fileID: 8208562291465101713}
   m_Layer: 0
   m_Name: coal_miner
   m_TagString: Untagged
@@ -1952,6 +1953,19 @@ MonoBehaviour:
   loadingBar: {fileID: 4768564860121706033}
   equationText: {fileID: 7921348439209329377}
   icon: {fileID: 4437285234014853415}
+--- !u!114 &8208562291465101713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8229353527772906504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 190f8988c05804e4bb72cd4ec3f9b2ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anchorOffset: {x: 0, y: 0}
 --- !u!1 &8518818567632297691
 GameObject:
   m_ObjectHideFlags: 0
