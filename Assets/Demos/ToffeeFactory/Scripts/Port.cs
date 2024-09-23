@@ -81,6 +81,7 @@ namespace ToffeeFactory {
       Sequence sequence = DOTween.Sequence();
       sequence.Append(spr.transform.DOScale(pressedShrinkSize * Vector3.one, pressedShrinkDuration));
       sequence.Append(spr.transform.DOScale( Vector3.one, hoverSwellDuration));
+      sequence.Append(spr.transform.DOScale(hoverSwellSize * Vector3.one, hoverSwellDuration));
     }
     public void OnPointerEnter(PointerEventData eventData) {
       spr.transform.DOScale(hoverSwellSize * Vector3.one, hoverSwellDuration);

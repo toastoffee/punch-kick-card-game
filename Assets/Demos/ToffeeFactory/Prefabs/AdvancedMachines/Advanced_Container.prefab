@@ -328,6 +328,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a8c7864192b4641ac2549b9f251694, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSwellSize: 1.1
+  pressedShrinkSize: 0.9
+  hoverSwellDuration: 0.1
+  pressedShrinkDuration: 0.1
+  recoverDuration: 0.1
 --- !u!58 &6617048945317694026
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -858,7 +863,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u94A2\u94C1"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 88e3b5e7a6f7146eb836bf46da4a10f8, type: 2}
   m_sharedMaterial: {fileID: 4299744242814282173, guid: 88e3b5e7a6f7146eb836bf46da4a10f8, type: 2}

@@ -1252,6 +1252,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a8c7864192b4641ac2549b9f251694, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSwellSize: 1.1
+  pressedShrinkSize: 0.9
+  hoverSwellDuration: 0.1
+  pressedShrinkDuration: 0.1
+  recoverDuration: 0.1
 --- !u!58 &5607298963815244284
 CircleCollider2D:
   m_ObjectHideFlags: 0
