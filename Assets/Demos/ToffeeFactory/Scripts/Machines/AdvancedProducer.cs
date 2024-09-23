@@ -61,6 +61,9 @@ namespace ToffeeFactory {
       // reset counters
       produceCounter = 0f;
       outPortCounters = new List<float>(outPorts.Count) { 0 };
+      
+      // update Equation Text
+      equationText.text = FormulaLibrary.GetFormulaStr(f);
     }
 
     private void Update() {

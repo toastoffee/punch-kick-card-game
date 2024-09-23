@@ -10,7 +10,7 @@ namespace ToffeeFactory {
     public void UpdateDisplay(SingleStorage storage) {
 
       if (storage.typeRestrict) {
-        typeText.text = "storage.type";
+        typeText.text = StuffQuery.GetRichText(storage.type);
         countText.text = $"{storage.count}/{storage.capacity}"; 
       } else {
         typeText.text = "";

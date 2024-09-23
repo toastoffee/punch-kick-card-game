@@ -19,5 +19,28 @@ namespace ToffeeFactory {
       
       return res;
     }
+    
+    public static string GetFormulaStr(ProduceFormula formula) {
+      string equation = "";
+      for (int i = 0; i < formula.ingredients.Count; i++) {
+        equation += $"{formula.ingredients[i].count} {StuffQuery.GetRichText(formula.ingredients[i].type)} ";
+
+        if (i != formula.ingredients.Count - 1) {
+          equation += "+ ";
+        }
+      }
+      equation += "= ";
+      
+      for (int i = 0; i < formula.products.Count; i++) {
+        equation += $"{formula.products[i].count} {StuffQuery.GetRichText(formula.products[i].type)} ";
+
+        if (i != formula.products.Count - 1) {
+          equation += "+ ";
+        }
+      }
+
+      return equation;
+    }
   }
+  
 }
