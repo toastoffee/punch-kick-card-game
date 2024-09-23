@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-
+using UnityEngine.UIElements;
 
 namespace ToffeeFactory {
   public class AdvancedProducer : AdvancedMachine {
@@ -31,12 +31,14 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private Transform icon;
+    
+    private int activeFormulaIdx = -1;
 
     [SerializeField]
-    private int testFormulaIdx;
+    private CustomButton switchFormulaBtn;
     
+
     private void Start() {
-      
       // set ports belonging
       foreach (var port in inPorts) {
         port.machineBelong = this;
@@ -45,10 +47,24 @@ namespace ToffeeFactory {
         port.machineBelong = this;
       }
 
-      SetFormula(FormulaLibrary.Instance.GetFormulasOfFamily(producerType)[testFormulaIdx]);
+      // attach switch formula Btn
+      switchFormulaBtn.clickHandler = () => { SwitchFormula(); };
       
+      SwitchFormula();
     }
 
+    private void SwitchFormula() {
+      var familyFormulas = FormulaLibrary.Instance.GetFormulasOfFamily(producerType);
+
+      int former = activeFormulaIdx;
+      activeFormulaIdx++;
+      activeFormulaIdx %= familyFormulas.Count;
+
+      if (former != activeFormulaIdx) {
+        SetFormula(familyFormulas[activeFormulaIdx]); 
+      }
+    }
+    
     private void SetFormula(ProduceFormula f) {
       formula = f;
       
