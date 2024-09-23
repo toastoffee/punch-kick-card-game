@@ -13,7 +13,7 @@ namespace ToffeeFactory {
       Cursor.SetCursor(noneCursor, Vector2.zero, CursorMode.Auto);  
     }
 
-    private void FixedUpdate() {
+    private void Update() {
       if (Input.GetMouseButton(2)) {
         Cursor.SetCursor(dragCursor, Vector2.zero, CursorMode.Auto);
       }
@@ -23,9 +23,6 @@ namespace ToffeeFactory {
       else {
         Cursor.SetCursor(noneCursor, Vector2.zero, CursorMode.Auto);  
       }
-
-
-      
     }
   }  
 }

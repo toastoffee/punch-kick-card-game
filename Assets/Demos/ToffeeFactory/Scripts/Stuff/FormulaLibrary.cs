@@ -3,7 +3,8 @@ using System.Collections.Generic;
 namespace ToffeeFactory {
   public enum FormulaFamily {
     Miner,
-    Furnace
+    Furnace,
+    Maker
   }
   public class FormulaLibrary : MonoSingleton<FormulaLibrary> {
     public List<ProduceFormula> formulas;

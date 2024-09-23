@@ -7,6 +7,7 @@ namespace ToffeeFactory {
     public BoxCollider2D boxCollider;
     public Color availColor;
     public Color unavailColor;
+    public Color rangeColor;
     public SpriteRenderer spriteRenderer;
   }
 }

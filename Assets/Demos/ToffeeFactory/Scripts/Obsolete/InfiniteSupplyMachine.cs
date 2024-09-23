@@ -177,11 +177,8 @@ namespace ToffeeFactory {
 
         // try transport ingredient
         if (pipeCounter[i] > pipeInterval && outContains[i].count > 0) {
-          Ingredient load = new Ingredient() {
-            name = outContains[i].name,
-            count = 1,
-          };
-          if (outPorts[i].isConnected && outPorts[i].connectedPort.affiliated.ReceiveIngredient(load)) {
+          StuffLoad load = new StuffLoad(StuffType.IronMine, 1);
+          if (outPorts[i].isConnected && outPorts[i].connectedPort.machineBelong.ReceiveStuffLoad(load)) {
             pipeCounter[i] = 0f;
             OutContainerTextShake();
           }

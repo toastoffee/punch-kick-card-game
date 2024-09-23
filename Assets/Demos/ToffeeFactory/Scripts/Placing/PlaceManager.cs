@@ -54,6 +54,7 @@ namespace ToffeeFactory {
       pos = new Vector2(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)) * cellSize;
 
       placingAnchor.isPlacing = true;
+      PlaceAnchor.isShowingRange = true;
       placingAnchor.transform.position = pos + offset;
       placingAnchor.transform.rotation = rotation;
 
@@ -73,6 +74,7 @@ namespace ToffeeFactory {
       state = State.IDLE;
       buyListItem = null;
       placingAnchor.isPlacing = false;
+      PlaceAnchor.isShowingRange = false;
       placingAnchor = null;
     }
   }

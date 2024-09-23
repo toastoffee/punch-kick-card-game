@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 250950662297678099}
   - component: {fileID: 1491388114065437074}
+  - component: {fileID: 3224307111210879929}
   m_Layer: 0
   m_Name: Advanced_Furnace
   m_TagString: Untagged
@@ -71,6 +72,21 @@ MonoBehaviour:
   switchFormulaBtn: {fileID: 2125689405131954070}
   formulaSelectorFolder: {fileID: 7189009033588918063}
   formulaSelector: {fileID: 805032796942342165, guid: 4ef7b9bbb3282408da7824554c19bf5c, type: 3}
+--- !u!114 &3224307111210879929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321689652427235819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 190f8988c05804e4bb72cd4ec3f9b2ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anchorOffset: {x: 0.5, y: 0}
+  occupySize: {x: 2, y: 1}
+  isPlacing: 0
 --- !u!1 &1582694046802192035
 GameObject:
   m_ObjectHideFlags: 0

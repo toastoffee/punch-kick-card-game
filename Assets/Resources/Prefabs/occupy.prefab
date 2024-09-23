@@ -94,6 +94,7 @@ MonoBehaviour:
   boxCollider: {fileID: 7728325644956818203}
   availColor: {r: 0.37254903, g: 0.87843144, b: 0.10980393, a: 1}
   unavailColor: {r: 1, g: 0.049690627, b: 0, a: 1}
+  rangeColor: {r: 0.76492226, g: 0.8301887, b: 0.8141841, a: 1}
   spriteRenderer: {fileID: 9089750103490279497}
 --- !u!1 &2532603168555235229
 GameObject:
@@ -168,11 +169,11 @@ SpriteRenderer:
   m_SortingLayerID: 1428274873
   m_SortingLayer: -1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4862ccaf10cd3ab449bdf972ee2775bd, type: 3}
   m_Color: {r: 0.37197363, g: 0.8805031, b: 0.119061574, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
