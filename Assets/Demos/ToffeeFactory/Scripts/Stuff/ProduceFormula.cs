@@ -7,6 +7,7 @@ namespace ToffeeFactory {
   public class ProduceFormula {
 
     public FormulaFamily family;
+    public string formulaName;
     public float produceInterval;
     public List<StuffLoad> ingredients;
     public List<StuffLoad> products;

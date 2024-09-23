@@ -29,6 +29,10 @@ namespace ToffeeFactory {
       _count = 0;
     }
 
+    public void UnlockRestrictType() {
+      _typeRestrict = false;
+    }
+
     // return true if added
     public bool TryAdd(StuffLoad load) {
       if (load.count == 0) {

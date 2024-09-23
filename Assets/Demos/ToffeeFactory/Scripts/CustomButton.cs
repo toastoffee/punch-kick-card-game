@@ -10,7 +10,9 @@ namespace ToffeeFactory {
     public Action clickHandler;
     
     public void OnPointerClick(PointerEventData eventData) {
-      clickHandler?.Invoke();
+      if (eventData.button == PointerEventData.InputButton.Left) {
+        clickHandler?.Invoke(); 
+      }
     }
   } 
 }

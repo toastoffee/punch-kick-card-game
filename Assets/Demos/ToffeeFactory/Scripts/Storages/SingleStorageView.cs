@@ -12,10 +12,15 @@ namespace ToffeeFactory {
 
       if (storage.typeRestrict) {
         typeText.text = StuffQuery.GetRichText(storage.type);
-        countText.text = $"{storage.count}/{storage.capacity}"; 
+        countText.text = $"{storage.count}/{storage.capacity}";
       } else {
-        typeText.text = "";
-        countText.text = "";
+        if (storage.count > 0) {
+          typeText.text = StuffQuery.GetRichText(storage.type);
+          countText.text = $"{storage.count}/{storage.capacity}"; 
+        } else {
+          typeText.text = "无";
+          countText.text = $"{storage.count}/{storage.capacity}"; 
+        }
       }
     }
 

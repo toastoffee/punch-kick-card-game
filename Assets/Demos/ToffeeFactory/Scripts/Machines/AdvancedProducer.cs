@@ -21,7 +21,7 @@ namespace ToffeeFactory {
     private ProduceFormula formula;
 
     private float produceCounter;
-    private List<float> outPortCounters;
+    private List<float> outPortCounters = new List<float>();
 
     [SerializeField]
     private LoadingBar loadingBar;
@@ -31,12 +31,15 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private Transform icon;
-    
-    private int activeFormulaIdx = -1;
 
     [SerializeField]
     private CustomButton switchFormulaBtn;
-    
+
+    [SerializeField]
+    private SelectorFolder formulaSelectorFolder;
+
+    [SerializeField]
+    private CustomButton formulaSelector;
 
     private void Start() {
       // set ports belonging
@@ -47,22 +50,35 @@ namespace ToffeeFactory {
         port.machineBelong = this;
       }
 
-      // attach switch formula Btn
-      switchFormulaBtn.clickHandler = () => { SwitchFormula(); };
+      InitializeFormulaSelector();
       
-      SwitchFormula();
+      // attach switch formula Btn
+      switchFormulaBtn.clickHandler = () => { formulaSelectorFolder.Unfold(); };
+      
+      SwitchFormula(FormulaLibrary.Instance.GetFormulasOfFamily(producerType)[0]);
     }
 
-    private void SwitchFormula() {
+    private void InitializeFormulaSelector() {
       var familyFormulas = FormulaLibrary.Instance.GetFormulasOfFamily(producerType);
 
-      int former = activeFormulaIdx;
-      activeFormulaIdx++;
-      activeFormulaIdx %= familyFormulas.Count;
-
-      if (former != activeFormulaIdx) {
-        SetFormula(familyFormulas[activeFormulaIdx]); 
+      foreach (var f in familyFormulas) {
+        var selector = Instantiate(formulaSelector, formulaSelectorFolder.transform.position, Quaternion.identity);
+        selector.transform.localScale = Vector3.zero;
+        
+        formulaSelectorFolder.AddUnit(selector.transform);
+        
+        selector.clickHandler = () => { SwitchFormula(f); formulaSelectorFolder.Fold(); };
+        selector.GetComponentInChildren<TMP_Text>().text = f.formulaName;
       }
+      
+      formulaSelectorFolder.Fold();
+    }
+    
+    private void SwitchFormula(ProduceFormula f) {
+      if (formula == f) {
+        return;
+      }
+      SetFormula(f);
     }
     
     private void SetFormula(ProduceFormula f) {
@@ -89,36 +105,43 @@ namespace ToffeeFactory {
     }
 
     private void Update() {
+      if (formula != null) {
+       
+        // produce
+        if (IsIngredientsSufficient() && IsStorageRemainForProducts()) {
+          produceCounter += Time.deltaTime;
+          loadingBar.SetBarState(produceCounter, formula.produceInterval);
 
-      // produce
-      if (IsIngredientsSufficient() && IsStorageRemainForProducts()) {
-        produceCounter += Time.deltaTime;
-        loadingBar.SetBarState(produceCounter, formula.produceInterval);
-
-        if (produceCounter > formula.produceInterval) {
-          produceCounter = 0f;
-          Produce();
+          if (produceCounter > formula.produceInterval) {
+            produceCounter = 0f;
+            Produce();
+          }
+        } else {
+          loadingBar.SetPaused();
         }
-      } else {
-        loadingBar.SetPaused();
-      }
       
-      // serve
-      for (int i = 0; i < outPorts.Count; i++) {
-        outPortCounters[i] += Time.deltaTime;
+        // serve
+        for (int i = 0; i < outPortCounters.Count; i++) {
+          outPortCounters[i] += Time.deltaTime;
         
-        // try transport ingredient
-        if (outPortCounters[i] > pipeInterval) {
-          StuffLoad supply = new StuffLoad(formula.products[i].type, 1);
-          if (storageSet.IsSufficient(supply)) {
-            if (outPorts[i].isConnected && outPorts[i].connectedPort.machineBelong.ReceiveStuffLoad(supply.Copy())) {
-              storageSet.TryConsume(supply);
-              outPortCounters[i] = 0f;
-            } 
+          // try transport ingredient
+          if (outPortCounters[i] > pipeInterval) {
+            StuffLoad supply = new StuffLoad(formula.products[i].type, 1);
+            if (storageSet.IsSufficient(supply)) {
+              if (outPorts[i].isConnected && outPorts[i].connectedPort.machineBelong.ReceiveStuffLoad(supply.Copy())) {
+                storageSet.TryConsume(supply);
+                outPortCounters[i] = 0f;
+              } 
+            }
           }
         }
+        
+        // fold formula selector
+        if (Input.GetMouseButtonDown(1)) {
+          formulaSelectorFolder.Fold();
+        }
+        
       }
-      
     }
 
     private void Produce() {

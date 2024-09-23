@@ -39,6 +39,12 @@ namespace ToffeeFactory {
       
       UpdateViews();
     }
+
+    public void UnlockStorage(int idx) {
+      _storages[idx].UnlockRestrictType();
+      
+      UpdateViews();
+    }
     
     public void UpdateViews() {
       for (int i = 0; i < _storageCount; i++) {
@@ -59,6 +65,7 @@ namespace ToffeeFactory {
       for (int i = _storageViews.Count; i < size; i++) {
         var newView = Instantiate(viewPrefab, NextViewPos(i, size), Quaternion.identity);
         _storageViews.Add(newView);
+        newView.transform.SetParent(transform);
       }
     }
 
@@ -86,7 +93,7 @@ namespace ToffeeFactory {
     public void TryConsume(StuffLoad load) {
       var copy = load.Copy();
       
-      for (int i = 0; i < _storages.Count; i++) {
+      for (int i = _storages.Count-1; i >= 0; i--) {
         bool isChanged = _storages[i].TryConsume(copy);
         if (isChanged) {
           // effect 
@@ -130,6 +137,7 @@ namespace ToffeeFactory {
       foreach (var storage in _storages) {
         storage.Clear();
       }
+      UpdateViews();
     }
     
 
