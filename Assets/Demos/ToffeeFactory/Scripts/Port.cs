@@ -21,7 +21,7 @@ namespace ToffeeFactory {
     [HideInInspector]
     public Machine affiliated = null;
 
-    [SerializeField]
+    [HideInInspector]
     public AdvancedMachine machineBelong;
 
     [SerializeField]

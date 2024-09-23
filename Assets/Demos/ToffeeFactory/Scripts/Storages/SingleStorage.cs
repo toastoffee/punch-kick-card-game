@@ -29,11 +29,13 @@ namespace ToffeeFactory {
       _count = 0;
     }
 
-    public void TryAdd(StuffLoad load) {
+    // return true if added
+    public bool TryAdd(StuffLoad load) {
       if (load.count == 0) {
-        return;
+        return false;
       }
-      
+
+      int formerCount = load.count;
       // if type is restricted => must be the same type
       if (_typeRestrict) {
         if (_type == load.type && !isFull) {
@@ -58,13 +60,17 @@ namespace ToffeeFactory {
           load.count -= addAmount;
         }  
       }
+
+      return formerCount != load.count;
     }
 
-    public void TryConsume(StuffLoad load) {
+    // return true if consumed
+    public bool TryConsume(StuffLoad load) {
       if (load.count == 0) {
-        return;
+        return false;
       }
       
+      int formerCount = load.count;
       if (_type == load.type && !isEmpty) {
           
         // consume amount
@@ -74,6 +80,7 @@ namespace ToffeeFactory {
         // modify load
         load.count -= consumeAmount;
       }
+      return formerCount != load.count;
     }
 
     public void TryProvide(StuffLoad load) {

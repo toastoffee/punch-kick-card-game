@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using DG.Tweening;
 
 namespace ToffeeFactory {
   public class SingleStorageView : MonoBehaviour {
@@ -16,6 +17,13 @@ namespace ToffeeFactory {
         typeText.text = "";
         countText.text = "";
       }
+    }
+
+    public void ShakeCountText() {
+      Sequence sequence = DOTween.Sequence();
+      sequence.Append(countText.transform.DOScale(new Vector3(1.3f, 0.8f, 1f), 0.1f));
+      sequence.Append(countText.transform.DOScale( new Vector3(0.8f, 1.3f, 1f), 0.1f));
+      sequence.Append(countText.transform.DOScale( new Vector3(1f, 1f, 1f), 0.1f));      
     }
     
   }

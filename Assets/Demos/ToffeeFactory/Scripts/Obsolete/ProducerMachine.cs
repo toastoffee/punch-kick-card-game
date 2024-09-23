@@ -9,11 +9,9 @@ namespace ToffeeFactory.Obsolete {
   public class ProducerMachine : Machine {
 
     public List<Port> inPorts;
-
     public List<Port> outPorts;
 
     public List<Storage> inContains;
-    
     public List<Storage> outContains;
     
     // define the formula

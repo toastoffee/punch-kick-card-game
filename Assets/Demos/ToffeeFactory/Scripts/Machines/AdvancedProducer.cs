@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -64,6 +65,11 @@ namespace ToffeeFactory {
       
       // update Equation Text
       equationText.text = FormulaLibrary.GetFormulaStr(f);
+      
+      // update port text
+      for (int i = 0; i < outPorts.Count; i++) {
+        outPorts[i].typeText.text = StuffQuery.GetRichText(f.products[i].type);
+      }
     }
 
     private void Update() {
@@ -92,8 +98,6 @@ namespace ToffeeFactory {
             if (outPorts[i].isConnected && outPorts[i].connectedPort.machineBelong.ReceiveStuffLoad(supply.Copy())) {
               storageSet.TryConsume(supply);
               outPortCounters[i] = 0f;
-              
-              //!TODO SHAKE SHACK 
             } 
           }
         }
@@ -112,6 +116,7 @@ namespace ToffeeFactory {
         storageSet.TryAdd(product);
       }
       
+      ShakeIcon();
     }
     
     public override bool ReceiveStuffLoad(StuffLoad load) {
@@ -138,6 +143,13 @@ namespace ToffeeFactory {
         }
       }
       return false;
+    }
+    
+    private void ShakeIcon() {
+      Sequence sequence = DOTween.Sequence();
+      sequence.Append(icon.DOScale(new Vector3(1.3f, 0.8f, 1f), 0.1f));
+      sequence.Append(icon.DOScale( new Vector3(0.8f, 1.3f, 1f), 0.1f));
+      sequence.Append(icon.DOScale( new Vector3(1f, 1f, 1f), 0.1f));
     }
     
   } 

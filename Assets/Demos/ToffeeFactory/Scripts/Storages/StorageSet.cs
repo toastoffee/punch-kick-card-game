@@ -57,20 +57,27 @@ namespace ToffeeFactory {
       
       // add under-count views
       for (int i = _storageViews.Count; i < size; i++) {
-        var newView = Instantiate(viewPrefab, NextViewPos(i), Quaternion.identity);
+        var newView = Instantiate(viewPrefab, NextViewPos(i, size), Quaternion.identity);
         _storageViews.Add(newView);
       }
     }
 
-    private Vector3 NextViewPos(int idx) {
-      return transform.position + idx * viewInterval * Vector3.right;
+    private Vector3 NextViewPos(int idx, int total) {
+      float offset = (total - 1) / -2f;
+      
+      return transform.position + (idx + offset) * viewInterval * Vector3.right;
     }
+    
 
     public void TryAdd(StuffLoad load) {
       var copy = load.Copy();
-      
-      foreach (var storage in _storages) {
-        storage.TryAdd(copy);
+
+      for (int i = 0; i < _storages.Count; i++) {
+        bool isChanged = _storages[i].TryAdd(copy);
+        if (isChanged) {
+          // effect 
+          _storageViews[i].ShakeCountText();
+        }
       }
       
       UpdateViews();
@@ -79,13 +86,18 @@ namespace ToffeeFactory {
     public void TryConsume(StuffLoad load) {
       var copy = load.Copy();
       
-      foreach (var storage in _storages) {
-        storage.TryConsume(copy);
+      for (int i = 0; i < _storages.Count; i++) {
+        bool isChanged = _storages[i].TryConsume(copy);
+        if (isChanged) {
+          // effect 
+          _storageViews[i].ShakeCountText();
+        }
       }
       
       UpdateViews();
     }
 
+    
     public bool IsSufficient(StuffLoad load) {
       var copy = load.Copy();
       
@@ -112,7 +124,6 @@ namespace ToffeeFactory {
       } else {
         return false;
       }
-      
     }
     
     public void Clear() {
