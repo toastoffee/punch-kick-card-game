@@ -57,7 +57,7 @@ MonoBehaviour:
   outPorts:
   - {fileID: 3417262936961562161}
   storageSet: {fileID: 5697354412264117619}
-  producerType: 0
+  producerType: 1
   formula:
     family: 0
     formulaName: 
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anchorOffset: {x: 0.5, y: 0}
-  occupySize: {x: 2, y: 1}
+  occupySize: {x: 2, y: 2}
   isPlacing: 0
 --- !u!1 &856135715480404229
 GameObject:

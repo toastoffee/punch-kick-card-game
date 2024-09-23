@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8290668848146789362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 374057152873336337}
+  - component: {fileID: 3152820302752286709}
+  m_Layer: 0
+  m_Name: Formula_Library
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &374057152873336337
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8290668848146789362}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -71.25536, y: 12.865038, z: 234.81607}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3152820302752286709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8290668848146789362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 751cd6508194494d88b525eb8cb20c6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  formulas:
+  - family: 0
+    formulaName: "\u7164\u77FF"
+    produceInterval: 1
+    ingredients: []
+    products:
+    - type: 2
+      count: 64
+  - family: 1
+    formulaName: "\u5F00\u91C7\u94C1\u77FF"
+    produceInterval: 1
+    ingredients:
+    - type: 1
+      count: 1
+    products:
+    - type: 4
+      count: 1
+  - family: 1
+    formulaName: "\u5F00\u91C7\u7164\u77FF"
+    produceInterval: 1
+    ingredients:
+    - type: 2
+      count: 1
+    products:
+    - type: 5
+      count: 1
+  - family: 2
+    formulaName: "\u51B6\u70BC\u94C1"
+    produceInterval: 1.5
+    ingredients:
+    - type: 4
+      count: 2
+    - type: 5
+      count: 1
+    products:
+    - type: 7
+      count: 1
+  - family: 2
+    formulaName: "\u5236\u4F5C\u94C1\u677F"
+    produceInterval: 5
+    ingredients:
+    - type: 7
+      count: 2
+    products:
+    - type: 8
+      count: 1

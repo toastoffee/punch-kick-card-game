@@ -15,5 +15,6 @@ namespace ToffeeFactory {
     CooperOre,
     
     IronIngot,
+    IronPlate,
   }
 }

@@ -20,7 +20,6 @@ public class IngredientQuery : Singleton<IngredientQuery>
       case "cooperOre":  // 铜矿石
         return "<color=#27BC4F>铜矿石</color>";
       
-      
       case "ironIngot":      // 铁锭
         return "<color=#939393>铁锭</color>";
       
