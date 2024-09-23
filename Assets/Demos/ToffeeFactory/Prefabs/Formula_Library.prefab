@@ -81,7 +81,7 @@ MonoBehaviour:
     products:
     - type: 7
       count: 1
-  - family: 2
+  - family: 3
     formulaName: "\u5236\u4F5C\u94C1\u677F"
     produceInterval: 5
     ingredients:

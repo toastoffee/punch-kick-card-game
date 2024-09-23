@@ -59,7 +59,7 @@ MonoBehaviour:
   outPorts:
   - {fileID: 57843590733707928}
   storageSet: {fileID: 5487322726412560603}
-  producerType: 1
+  producerType: 2
   formula:
     family: 0
     formulaName: 
