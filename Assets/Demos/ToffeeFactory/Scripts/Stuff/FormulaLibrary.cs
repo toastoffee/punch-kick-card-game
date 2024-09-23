@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace ToffeeFactory {
   public enum FormulaFamily {
+    Mine,
     Miner,
     Furnace,
     Maker
