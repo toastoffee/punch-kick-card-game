@@ -1576,6 +1576,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5674594238663584880}
     m_Modifications:
+    - target: {fileID: 1716783911259688702, guid: f47e802c3964b4eab85b2bd1e34e299d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3914511934872481711, guid: f47e802c3964b4eab85b2bd1e34e299d, type: 3}
       propertyPath: m_Name
       value: InPort
@@ -1618,6 +1622,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7088270783788046112, guid: f47e802c3964b4eab85b2bd1e34e299d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8253484769751109999, guid: f47e802c3964b4eab85b2bd1e34e299d, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

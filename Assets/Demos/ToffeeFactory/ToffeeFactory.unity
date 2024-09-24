@@ -1254,6 +1254,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1462288689542134519, guid: b8264e25d83a24fa68b07a1e39f7505c, type: 3}
+      propertyPath: produces.Array.data[0].name
+      value: iron
+      objectReference: {fileID: 0}
     - target: {fileID: 7533113831928336844, guid: b8264e25d83a24fa68b07a1e39f7505c, type: 3}
       propertyPath: m_Name
       value: iron_mine
