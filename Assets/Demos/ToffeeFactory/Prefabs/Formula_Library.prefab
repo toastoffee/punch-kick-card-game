@@ -45,15 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   formulas:
-  - family: 0
-    formulaName: "\u7164\u77FF"
-    produceInterval: 1
-    ingredients: []
-    products:
-    - type: 2
-      count: 64
   - family: 1
-    formulaName: "\u5F00\u91C7\u94C1\u77FF"
+    formulaName: "\u5F00\u91C7\u94C1"
     produceInterval: 1
     ingredients:
     - type: 1
@@ -62,7 +55,16 @@ MonoBehaviour:
     - type: 4
       count: 1
   - family: 1
-    formulaName: "\u5F00\u91C7\u7164\u77FF"
+    formulaName: "\u5F00\u91C7\u94DC"
+    produceInterval: 1
+    ingredients:
+    - type: 3
+      count: 1
+    products:
+    - type: 6
+      count: 1
+  - family: 1
+    formulaName: "\u5F00\u91C7\u7164"
     produceInterval: 1
     ingredients:
     - type: 2
@@ -75,18 +77,51 @@ MonoBehaviour:
     produceInterval: 1.5
     ingredients:
     - type: 4
-      count: 2
+      count: 1
     - type: 5
       count: 1
     products:
     - type: 7
+      count: 1
+  - family: 2
+    formulaName: "\u51B6\u70BC\u94DC"
+    produceInterval: 1.5
+    ingredients:
+    - type: 6
+      count: 2
+    - type: 5
+      count: 1
+    products:
+    - type: 8
       count: 1
   - family: 3
     formulaName: "\u5236\u4F5C\u94C1\u677F"
     produceInterval: 5
     ingredients:
     - type: 7
-      count: 2
+      count: 1
     products:
+    - type: 9
+      count: 1
+  - family: 3
+    formulaName: "\u5236\u4F5C\u94DC\u7EBF"
+    produceInterval: 3
+    ingredients:
     - type: 8
+      count: 1
+    - type: 9
+      count: 1
+    products:
+    - type: 10
+      count: 1
+  - family: 3
+    formulaName: "\u5236\u4F5C\u7535\u8DEF\u677F"
+    produceInterval: 10
+    ingredients:
+    - type: 9
+      count: 2
+    - type: 10
+      count: 1
+    products:
+    - type: 11
       count: 1

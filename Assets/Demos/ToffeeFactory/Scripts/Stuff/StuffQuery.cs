@@ -21,6 +21,17 @@ namespace ToffeeFactory {
         
         case StuffType.IronIngot:
           return "<color=#939393>铁锭</color>";
+        case StuffType.CooperIngot:
+          return "<color=#FFAC00>铜锭</color>";
+        
+        
+        case StuffType.CooperWire:
+          return "<color=#FFBD00>铜线</color>";
+        case StuffType.IronPlate:
+          return "<color=#B4B4B4>铁板</color>";
+        
+        case StuffType.CircuitBoard:
+          return "<color=#004B0B>电路板</color>";
       }
 
       return "NONE";

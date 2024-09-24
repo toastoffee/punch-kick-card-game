@@ -15,6 +15,11 @@ namespace ToffeeFactory {
     CooperOre,
     
     IronIngot,
+    CooperIngot,
+    
     IronPlate,
+    CooperWire,
+    
+    CircuitBoard
   }
 }
