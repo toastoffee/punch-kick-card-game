@@ -25,7 +25,7 @@ namespace ToffeeFactory {
     public static string GetFormulaStr(ProduceFormula formula) {
       string equation = "";
       for (int i = 0; i < formula.ingredients.Count; i++) {
-        equation += $"{formula.ingredients[i].count} {StuffQuery.GetRichText(formula.ingredients[i].type)} ";
+        equation += $"{GetNumString(formula.ingredients[i].count)} {StuffQuery.GetRichText(formula.ingredients[i].type)} ";
 
         if (i != formula.ingredients.Count - 1) {
           equation += "+ ";
@@ -34,7 +34,7 @@ namespace ToffeeFactory {
       equation += "= ";
       
       for (int i = 0; i < formula.products.Count; i++) {
-        equation += $"{formula.products[i].count} {StuffQuery.GetRichText(formula.products[i].type)} ";
+        equation += $"{GetNumString(formula.products[i].count)} {StuffQuery.GetRichText(formula.products[i].type)} ";
 
         if (i != formula.products.Count - 1) {
           equation += "+ ";
@@ -42,6 +42,14 @@ namespace ToffeeFactory {
       }
 
       return equation;
+    }
+
+    public static string GetNumString(int num) {
+      if (num == 42) {
+        return "<size=11>\u221e</size>";
+      } else {
+        return $"{num}";
+      }
     }
   }
   

@@ -17,8 +17,14 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private FormulaFamily producerType;
-    [SerializeField]
+    
     private ProduceFormula formula;
+
+    [SerializeField]
+    private bool useFixedFormula;
+
+    [SerializeField]
+    private ProduceFormula fixedFormula;
 
     private float produceCounter;
     private List<float> outPortCounters = new List<float>();
@@ -54,8 +60,12 @@ namespace ToffeeFactory {
       
       // attach switch formula Btn
       switchFormulaBtn.clickHandler = () => { formulaSelectorFolder.Unfold(); };
-      
-      SwitchFormula(FormulaLibrary.Instance.GetFormulasOfFamily(producerType)[0]);
+
+      if (useFixedFormula) {
+        SwitchFormula(fixedFormula);
+      } else {
+        SwitchFormula(FormulaLibrary.Instance.GetFormulasOfFamily(producerType)[0]); 
+      }
     }
 
     private void InitializeFormulaSelector() {
