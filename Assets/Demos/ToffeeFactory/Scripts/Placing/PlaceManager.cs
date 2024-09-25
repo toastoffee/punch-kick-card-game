@@ -6,7 +6,8 @@ namespace ToffeeFactory {
   public class PlaceManager : MonoSingleton<PlaceManager> {
     public enum State {
       IDLE,
-      PLACING,
+      BUY_PLACING,
+      RE_PLACING
     }
     public enum Rot {
       UP, RIGHT, DOWN, LEFT
@@ -15,16 +16,26 @@ namespace ToffeeFactory {
     private PlaceAnchor placingAnchor;
     private BuyListItem buyListItem;
     private Rot placingRot;
+    private Vector3 replaceSrcPos;
 
-    public void StartPlace(BuyListItem buyListItem) {
+    public void StartBuyPlace(BuyListItem buyListItem) {
       if (state != State.IDLE) {
         return;
       }
       var placeAnchorPrefab = buyListItem.placingPrefab;
       this.buyListItem = buyListItem;
-      state = State.PLACING;
+      state = State.BUY_PLACING;
       placingAnchor = Instantiate(placeAnchorPrefab);
       placingAnchor.transform.position = 99999 * Vector2.one;
+    }
+
+    public void StartRePlace(PlaceAnchor placeAnchor) {
+      if (state != State.IDLE) {
+        return;
+      }
+      placingAnchor = placeAnchor;
+      state = State.RE_PLACING;
+      replaceSrcPos = placeAnchor.transform.position;
     }
 
     public void Update() {
@@ -32,6 +43,7 @@ namespace ToffeeFactory {
         return;
       }
       if (Input.GetMouseButton(1)) {
+        placingAnchor.OnEndPlace();
         EndPlace();
       }
       if (state == State.IDLE) {
@@ -59,23 +71,45 @@ namespace ToffeeFactory {
       placingAnchor.transform.rotation = rotation;
 
       if (Input.GetMouseButtonDown(0)) {
-        if (!placingAnchor.CanPlace || !Status.Instance.CanAfford(buyListItem.price)) {
+        if (!placingAnchor.CanPlace) {
           return;
         }
-        Status.Instance.RemoveMoney(buyListItem.price);
-        placingAnchor.isPlacing = false;
-        placingAnchor = Instantiate(buyListItem.placingPrefab);
-        placingAnchor.transform.position = 99999 * Vector2.one;
+        if (state == State.BUY_PLACING) {
+          if (!Status.Instance.CanAfford(buyListItem.price)) {
+            return;
+          }
+          Status.Instance.RemoveMoney(buyListItem.price);
+          placingAnchor.OnEndPlace();
+          placingAnchor = Instantiate(buyListItem.placingPrefab);
+          placingAnchor.transform.position = 99999 * Vector2.one;
+        } else if (state == State.RE_PLACING) {
+          placingAnchor.OnEndPlace();
+          placingAnchor = null;
+          EndPlace();
+        }
       }
     }
 
     public void EndPlace() {
-      Destroy(placingAnchor.gameObject);
+      do {
+        if (state == State.BUY_PLACING) {
+          if (placingAnchor == null) {
+            break;
+          }
+          placingAnchor.OnEndPlace();
+          Destroy(placingAnchor.gameObject);
+          placingAnchor = null;
+
+        } else if (state == State.RE_PLACING) {
+          if (placingAnchor == null) {
+            break;
+          }
+          placingAnchor.transform.position = replaceSrcPos;
+        }
+      } while (false);
       state = State.IDLE;
       buyListItem = null;
-      placingAnchor.isPlacing = false;
       PlaceAnchor.isShowingRange = false;
-      placingAnchor = null;
     }
   }
 }

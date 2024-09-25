@@ -18,7 +18,7 @@ namespace ToffeeFactory {
     }
 
     public void EventOnClick() {
-      PlaceManager.Instance.StartPlace(this);
+      PlaceManager.Instance.StartBuyPlace(this);
     }
   }
 }

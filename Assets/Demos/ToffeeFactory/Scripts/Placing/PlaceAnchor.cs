@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace ToffeeFactory {
-  public class PlaceAnchor : MonoBehaviour {
+  public class PlaceAnchor : MonoBehaviour, IPointerClickHandler {
     public Vector2 anchorOffset;
     public Vector2Int occupySize;
     public bool isPlacing;
+    public bool disableReplace;
     private PlaceOccupy occupy;
     private static Collider2D[] collideRes = new Collider2D[10];
     public static bool isShowingRange;
@@ -41,6 +43,22 @@ namespace ToffeeFactory {
       var filter = new ContactFilter2D();
       filter.SetLayerMask(LayerMask.GetMask("Occupy"));
       isOverlaped = Physics2D.OverlapCollider(occupy.boxCollider, filter, collideRes) > 0;
+    }
+
+    public void OnEndPlace() {
+      isPlacing = false;
+      occupy.boxCollider.enabled = true;
+    }
+
+    public void OnPointerClick(PointerEventData eventData) {
+      if (eventData.button != 0) {
+        return;
+      }
+      if (disableReplace || isPlacing) {
+        return;
+      }
+      occupy.boxCollider.enabled = false;
+      PlaceManager.Instance.StartRePlace(this);
     }
   }
 }
