@@ -12,79 +12,95 @@ namespace ToffeeFactory {
     public enum Rot {
       UP, RIGHT, DOWN, LEFT
     }
-    private State state;
-    private PlaceAnchor placingAnchor;
-    private BuyListItem buyListItem;
-    private Rot placingRot;
-    private Vector3 replaceSrcPos;
+
+    public struct PlaceContext {
+      public State state;
+      public PlaceAnchor placingAnchor;
+      public BuyListItem buyListItem;
+      public Rot placingRot;
+      public Vector3 replaceSrcPos;
+
+      public void StartBuyPlace(BuyListItem buyListItem) {
+        var placeAnchorPrefab = buyListItem.placingPrefab;
+        this.buyListItem = buyListItem;
+        state = State.BUY_PLACING;
+        placingAnchor = Instantiate(placeAnchorPrefab);
+        placingAnchor.transform.position = 99999 * Vector2.one;
+        placingAnchor.OnStartPlace();
+      }
+
+      public void StartRePlace(PlaceAnchor placeAnchor) {
+        placingAnchor = placeAnchor;
+        state = State.RE_PLACING;
+        replaceSrcPos = placeAnchor.transform.position;
+        placingAnchor.OnStartPlace();
+      }
+    }
+
+    private PlaceContext m_ctx;
 
     public void StartBuyPlace(BuyListItem buyListItem) {
-      if (state != State.IDLE) {
+      if (m_ctx.state != State.IDLE) {
         return;
       }
-      var placeAnchorPrefab = buyListItem.placingPrefab;
-      this.buyListItem = buyListItem;
-      state = State.BUY_PLACING;
-      placingAnchor = Instantiate(placeAnchorPrefab);
-      placingAnchor.transform.position = 99999 * Vector2.one;
+      m_ctx = new PlaceContext();
+      m_ctx.StartBuyPlace(buyListItem);
     }
 
     public void StartRePlace(PlaceAnchor placeAnchor) {
-      if (state != State.IDLE) {
+      if (m_ctx.state != State.IDLE) {
         return;
       }
-      placingAnchor = placeAnchor;
-      state = State.RE_PLACING;
-      replaceSrcPos = placeAnchor.transform.position;
+      m_ctx = new PlaceContext();
+      m_ctx.StartRePlace(placeAnchor);
     }
 
     public void Update() {
-      if (state == State.IDLE) {
+      if (m_ctx.state == State.IDLE) {
         return;
       }
       if (Input.GetMouseButton(1)) {
-        placingAnchor.OnEndPlace();
+        m_ctx.placingAnchor.OnEndPlace();
         EndPlace();
       }
-      if (state == State.IDLE) {
+      if (m_ctx.state == State.IDLE) {
         return;
       }
 
       if (Input.GetKeyDown(KeyCode.R)) {
-        placingRot = (Rot)(((int)placingRot + 1) % 4);
+        m_ctx.placingRot = (Rot)(((int)m_ctx.placingRot + 1) % 4);
       }
 
       var cellSize = Consts.cellSize;
-      var rotation = Quaternion.Euler(0, 0, (int)placingRot * -90);
+      var rotation = Quaternion.Euler(0, 0, (int)m_ctx.placingRot * -90);
 
       var mousePos = (Vector2)Input.mousePosition;
       mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-      var offset = placingAnchor.anchorOffset * cellSize;
+      var offset = m_ctx.placingAnchor.anchorOffset * cellSize;
       offset = rotation * offset;
       var pos = mousePos - offset;
       pos = pos / cellSize;
       pos = new Vector2(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)) * cellSize;
 
-      placingAnchor.isPlacing = true;
       PlaceAnchor.isShowingRange = true;
-      placingAnchor.transform.position = pos + offset;
-      placingAnchor.transform.rotation = rotation;
+      m_ctx.placingAnchor.transform.position = pos + offset;
+      m_ctx.placingAnchor.transform.rotation = rotation;
 
       if (Input.GetMouseButtonDown(0)) {
-        if (!placingAnchor.CanPlace) {
+        if (!m_ctx.placingAnchor.CanPlace) {
           return;
         }
-        if (state == State.BUY_PLACING) {
-          if (!Status.Instance.CanAfford(buyListItem.price)) {
+        if (m_ctx.state == State.BUY_PLACING) {
+          if (!Status.Instance.CanAfford(m_ctx.buyListItem.price)) {
             return;
           }
-          Status.Instance.RemoveMoney(buyListItem.price);
-          placingAnchor.OnEndPlace();
-          placingAnchor = Instantiate(buyListItem.placingPrefab);
-          placingAnchor.transform.position = 99999 * Vector2.one;
-        } else if (state == State.RE_PLACING) {
-          placingAnchor.OnEndPlace();
-          placingAnchor = null;
+          Status.Instance.RemoveMoney(m_ctx.buyListItem.price);
+          m_ctx.placingAnchor.OnEndPlace();
+          m_ctx.placingAnchor = Instantiate(m_ctx.buyListItem.placingPrefab);
+          m_ctx.placingAnchor.transform.position = 99999 * Vector2.one;
+        } else if (m_ctx.state == State.RE_PLACING) {
+          m_ctx.placingAnchor.OnEndPlace();
+          m_ctx.placingAnchor = null;
           EndPlace();
         }
       }
@@ -92,23 +108,23 @@ namespace ToffeeFactory {
 
     public void EndPlace() {
       do {
-        if (state == State.BUY_PLACING) {
-          if (placingAnchor == null) {
+        if (m_ctx.state == State.BUY_PLACING) {
+          if (m_ctx.placingAnchor == null) {
             break;
           }
-          placingAnchor.OnEndPlace();
-          Destroy(placingAnchor.gameObject);
-          placingAnchor = null;
+          m_ctx.placingAnchor.OnEndPlace();
+          Destroy(m_ctx.placingAnchor.gameObject);
+          m_ctx.placingAnchor = null;
 
-        } else if (state == State.RE_PLACING) {
-          if (placingAnchor == null) {
+        } else if (m_ctx.state == State.RE_PLACING) {
+          if (m_ctx.placingAnchor == null) {
             break;
           }
-          placingAnchor.transform.position = replaceSrcPos;
+          m_ctx.placingAnchor.transform.position = m_ctx.replaceSrcPos;
         }
       } while (false);
-      state = State.IDLE;
-      buyListItem = null;
+      m_ctx.state = State.IDLE;
+      m_ctx.buyListItem = null;
       PlaceAnchor.isShowingRange = false;
     }
   }

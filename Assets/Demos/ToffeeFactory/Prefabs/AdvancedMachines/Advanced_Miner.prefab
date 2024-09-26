@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190f8988c05804e4bb72cd4ec3f9b2ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorOffset: {x: 0.5, y: 0}
+  anchorOffset: {x: 0.5, y: 0.5}
   occupySize: {x: 2, y: 2}
   isPlacing: 0
   disableReplace: 0

@@ -50,14 +50,14 @@ namespace ToffeeFactory {
       }
     }
 
-    private void Connect() {
+    public void Connect() {
       if (!isConnected) {
         // handle connection click event
         PortConnectManager.Instance.HandleConnect(this);
       }
     }
 
-    private void Disconnect() {
+    public void Disconnect() {
       // check if is connected
       if (isConnected) {
         // disconnect and destroy pipe

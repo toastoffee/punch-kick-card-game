@@ -4,16 +4,17 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace ToffeeFactory {
-  public class PlaceAnchor : MonoBehaviour, IPointerClickHandler {
+  public class PlaceAnchor : MonoBehaviour, IMachineMouseCallback {
     public Vector2 anchorOffset;
     public Vector2Int occupySize;
-    public bool isPlacing;
     public bool disableReplace;
     private PlaceOccupy occupy;
     private static Collider2D[] collideRes = new Collider2D[10];
     public static bool isShowingRange;
 
     private bool isOverlaped;
+    private bool m_isPlacing;
+    private float m_lastReleaseTime;
 
     public bool CanPlace => !isOverlaped;
 
@@ -24,12 +25,12 @@ namespace ToffeeFactory {
     }
 
     private void Update() {
-      if (!isPlacing && !isShowingRange) {
+      if (!m_isPlacing && !isShowingRange) {
         occupy.spriteRenderer.gameObject.SetActive(false);
       } else {
         occupy.spriteRenderer.gameObject.SetActive(true);
       }
-      if (!isPlacing) {
+      if (!m_isPlacing) {
         occupy.spriteRenderer.color = occupy.rangeColor;
       } else {
         occupy.spriteRenderer.color = isOverlaped ? occupy.unavailColor : occupy.availColor;
@@ -37,7 +38,7 @@ namespace ToffeeFactory {
     }
 
     private void FixedUpdate() {
-      if (!isPlacing) {
+      if (!m_isPlacing) {
         return;
       }
       var filter = new ContactFilter2D();
@@ -46,19 +47,37 @@ namespace ToffeeFactory {
     }
 
     public void OnEndPlace() {
-      isPlacing = false;
-      occupy.boxCollider.enabled = true;
+      m_isPlacing = false;
+      m_lastReleaseTime = Time.realtimeSinceStartup;
+      BroadcastMessage(nameof(IMachinePlaceCallback.OnMachinePlaceEnd), SendMessageOptions.DontRequireReceiver);
     }
 
-    public void OnPointerClick(PointerEventData eventData) {
-      if (eventData.button != 0) {
+    public void OnStartPlace() {
+      m_isPlacing = true;
+      TFUtils.DisconnectAllChildrenPort(gameObject);
+      BroadcastMessage(nameof(IMachinePlaceCallback.OnMachinePlaceStart), SendMessageOptions.DontRequireReceiver);
+    }
+
+    public void TryInvokePlace() {
+      if (disableReplace || m_isPlacing) {
         return;
       }
-      if (disableReplace || isPlacing) {
+      if (Time.realtimeSinceStartup - m_lastReleaseTime < 0.1f) {
         return;
       }
-      occupy.boxCollider.enabled = false;
       PlaceManager.Instance.StartRePlace(this);
     }
+
+    public void OnLeftHoldDone() {
+      TryInvokePlace();
+    }
+
+    public void OnRightHoldDone() {
+    }
+  }
+
+  public interface IMachinePlaceCallback {
+    void OnMachinePlaceEnd();
+    void OnMachinePlaceStart();
   }
 }

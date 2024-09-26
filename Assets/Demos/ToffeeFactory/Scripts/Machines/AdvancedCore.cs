@@ -23,5 +23,8 @@ namespace ToffeeFactory {
       return false;
     }
 
+    public override IEnumerable<Port> GetAllPorts() {
+      return inPorts;
+    }
   } 
 }
