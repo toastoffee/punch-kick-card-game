@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace ToffeeFactory {
     private bool isPipeOverSized = false;
 
     [SerializeField]
-    private Transform pipeArea;
+    private LineRenderer rangeCircle;
     
     private bool checkConnectionLegal(Port a, Port b) {
       return a.type != b.type && !isPipeOverSized;
@@ -58,6 +59,23 @@ namespace ToffeeFactory {
       }
     }
 
+    private void BuildCirclePoses(int resolution) {
+
+      List<Vector3> poses = new List<Vector3>();
+      
+      for (int i = 0; i <= resolution; i++) {
+        float angle = Mathf.Deg2Rad * 360f * ((float)i / resolution);
+
+        float x = Mathf.Cos(angle) * pipeMaxLength;
+        float y = Mathf.Sin(angle) * pipeMaxLength;
+        
+        poses.Add(new Vector3(x, y, transform.position.z));
+      }
+      
+      rangeCircle.positionCount = poses.Count;
+      rangeCircle.SetPositions(poses.ToArray());
+    }
+    
     private Vector3[] BeautifyPath(Vector3 start, Vector3 end, float zipDist) {
       Vector3 frontNorm = new Vector3((end - start).x, 0, 0).normalized;
 
@@ -91,9 +109,9 @@ namespace ToffeeFactory {
     
     private void Start() {
 
-
-      pipeArea.localScale = new Vector3(pipeMaxLength*2, pipeMaxLength*2, 1);
-      pipeArea.gameObject.SetActive(false);
+      BuildCirclePoses(100);
+      
+      rangeCircle.gameObject.SetActive(false);
       
       previewPipe.gameObject.SetActive(false);
       forbiddenPipe.gameObject.SetActive(false);
@@ -121,8 +139,8 @@ namespace ToffeeFactory {
         float distance = (m_portInConnecting.transform.position - worldPosition).magnitude;
 
 
-        pipeArea.position = m_portInConnecting.transform.position;
-        pipeArea.gameObject.SetActive(true);
+        rangeCircle.transform.position = m_portInConnecting.transform.position;
+        rangeCircle.gameObject.SetActive(true);
         
         if (distance <= pipeMaxLength) {
           previewPipe.gameObject.SetActive(true);
@@ -152,7 +170,7 @@ namespace ToffeeFactory {
         }
 
       } else {
-        pipeArea.gameObject.SetActive(false);
+        rangeCircle.gameObject.SetActive(false);
         previewPipe.gameObject.SetActive(false);
         forbiddenPipe.gameObject.SetActive(false);
         distText.gameObject.SetActive(false);

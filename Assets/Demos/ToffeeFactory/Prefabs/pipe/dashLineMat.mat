@@ -57,9 +57,9 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _dashLength: 0.4
-    - _lineLength: 10
+    - _lineLength: 50
     m_Colors:
-    - _Color: {r: 0, g: 0.7204292, b: 0.9622642, a: 1}
+    - _Color: {r: 0, g: 0.9607843, b: 0.12902074, a: 0.3882353}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
