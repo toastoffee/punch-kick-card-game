@@ -24,6 +24,9 @@ namespace ToffeeFactory {
     private float pipeMaxLength;
     
     private bool isPipeOverSized = false;
+
+    [SerializeField]
+    private Transform pipeArea;
     
     private bool checkConnectionLegal(Port a, Port b) {
       return a.type != b.type && !isPipeOverSized;
@@ -84,16 +87,14 @@ namespace ToffeeFactory {
         end
       };
     }
-
-    private float Distance(Vector3[] poses) {
-      float sum = 0f;
-      for (int i = 0; i < poses.Length - 1; i++) {
-        sum += (poses[i] - poses[i + 1]).magnitude;
-      }
-      return sum;
-    }
+    
     
     private void Start() {
+
+
+      pipeArea.localScale = new Vector3(pipeMaxLength*2, pipeMaxLength*2, 1);
+      pipeArea.gameObject.SetActive(false);
+      
       previewPipe.gameObject.SetActive(false);
       forbiddenPipe.gameObject.SetActive(false);
       
@@ -117,8 +118,12 @@ namespace ToffeeFactory {
 
         Vector3 centerPos = new Vector3();
         Vector3[] poses = BeautifyPath(m_portInConnecting.transform.position, worldPosition, 0.25f, ref centerPos);
-        float distance = Distance(poses);
+        float distance = (m_portInConnecting.transform.position - worldPosition).magnitude;
 
+
+        pipeArea.position = m_portInConnecting.transform.position;
+        pipeArea.gameObject.SetActive(true);
+        
         if (distance <= pipeMaxLength) {
           previewPipe.gameObject.SetActive(true);
           previewPipe.positionCount = poses.Length;
@@ -147,6 +152,7 @@ namespace ToffeeFactory {
         }
 
       } else {
+        pipeArea.gameObject.SetActive(false);
         previewPipe.gameObject.SetActive(false);
         forbiddenPipe.gameObject.SetActive(false);
         distText.gameObject.SetActive(false);
