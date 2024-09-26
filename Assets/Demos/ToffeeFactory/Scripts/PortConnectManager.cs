@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 namespace ToffeeFactory {
@@ -12,6 +13,9 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private LineRenderer previewPipe;
+
+    [SerializeField]
+    private TMP_Text distText;
     
     private bool checkConnectionLegal(Port a, Port b) {
       return a.type != b.type;
@@ -57,8 +61,34 @@ namespace ToffeeFactory {
       };
     }
     
+    private Vector3[] BeautifyPath(Vector3 start, Vector3 end, float zipDist, ref Vector3 centerPos) {
+      Vector3 frontNorm = new Vector3((end - start).x, 0, 0).normalized;
+
+      Vector3 startZipPos = start + frontNorm * zipDist;
+      Vector3 endZipPos = end - frontNorm * zipDist;
+
+      centerPos = (startZipPos + endZipPos) / 2f;
+
+      return new[] {
+        start,
+        startZipPos,
+        endZipPos,
+        end
+      };
+    }
+
+    private float Distance(Vector3[] poses) {
+      float sum = 0f;
+      for (int i = 0; i < poses.Length - 1; i++) {
+        sum += (poses[i] - poses[i + 1]).magnitude;
+      }
+      return sum;
+    }
+    
     private void Start() {
       previewPipe.gameObject.SetActive(false);
+      
+      distText.gameObject.SetActive(false);
     }
 
     private void Update() {
@@ -76,13 +106,23 @@ namespace ToffeeFactory {
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y, Camera.main.nearClipPlane));
         worldPosition.Set(worldPosition.x, worldPosition.y, 0f);
 
-        Vector3[] poses = BeautifyPath(m_portInConnecting.transform.position, worldPosition, 0.25f);
-
+        Vector3 centerPos = new Vector3();
+        Vector3[] poses = BeautifyPath(m_portInConnecting.transform.position, worldPosition, 0.25f, ref centerPos);
+        float distance = Distance(poses);
+        
+        
         previewPipe.gameObject.SetActive(true);
         previewPipe.positionCount = poses.Length;
         previewPipe.SetPositions(poses);
+        
+        distText.gameObject.SetActive(true);
+        distText.transform.position = centerPos;
+        distText.text = "管道距离:" + $"{distance:N1}m";
+
+
       } else {
         previewPipe.gameObject.SetActive(false);
+        distText.gameObject.SetActive(false);
       }
       
       
