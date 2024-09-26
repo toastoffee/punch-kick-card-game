@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 namespace ToffeeFactory {
-  public class AdvancedProducer : AdvancedMachine {
+  public class AdvancedProducer : AdvancedMachine, IPointerEnterHandler, IPointerExitHandler {
     
     public List<Port> inPorts;
     public List<Port> outPorts;
@@ -48,6 +49,7 @@ namespace ToffeeFactory {
     private CustomButton formulaSelector;
 
     private void Start() {
+      
       // set ports belonging
       foreach (var port in inPorts) {
         port.machineBelong = this;
@@ -200,6 +202,12 @@ namespace ToffeeFactory {
       sequence.Append(icon.DOScale( new Vector3(0.8f, 1.3f, 1f), 0.1f));
       sequence.Append(icon.DOScale( new Vector3(1f, 1f, 1f), 0.1f));
     }
-    
+
+    public void OnPointerEnter(PointerEventData eventData) {
+      storageSet._folder.Unfold();
+    }
+    public void OnPointerExit(PointerEventData eventData) {
+      storageSet._folder.Fold();
+    }
   } 
 }

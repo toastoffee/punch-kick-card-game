@@ -17,11 +17,16 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private float yOffset;
-
-
+    
+    
     public void AddUnit(Transform unit) {
       units.Add(unit);
       unit.parent = transform;
+      unit.transform.localScale = Vector3.zero;
+    }
+
+    public void RemoveUnit(Transform unit) {
+      units.Remove(unit);
     }
     
     public void Fold() {
