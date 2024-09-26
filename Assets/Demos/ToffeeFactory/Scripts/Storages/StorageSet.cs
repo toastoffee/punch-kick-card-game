@@ -1,13 +1,10 @@
-
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ToffeeFactory {
   public class StorageSet : MonoBehaviour {
-
-
+    
     private int _storageCount;
     private List<SingleStorage> _storages = new List<SingleStorage>();
     private List<SingleStorageView> _storageViews = new List<SingleStorageView>();

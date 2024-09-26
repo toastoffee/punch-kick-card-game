@@ -1,12 +1,14 @@
 using System;
 
 namespace ToffeeFactory {
+  
+  [Serializable]
   public class SingleStorage {
 
-    private bool _typeRestrict = false;   
-    private StuffType _type;
-    private int _capacity;
-    private int _count;
+    public bool _typeRestrict = false;   
+    public StuffType _type;
+    public int _capacity;
+    public int _count;
 
     public bool typeRestrict => _typeRestrict;
     public StuffType type => _type;
