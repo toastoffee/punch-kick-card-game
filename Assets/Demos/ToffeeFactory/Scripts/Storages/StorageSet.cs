@@ -14,9 +14,6 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private float viewInterval;
-
-    [SerializeField]
-    public SelectorFolder _folder;
     
     public void SetStorageSize(int storageNum) {
       _storageCount = storageNum;
@@ -58,7 +55,6 @@ namespace ToffeeFactory {
       for (int i = _storageViews.Count-1; i >= size; i++) {
         var last = _storageViews[i];
         _storageViews.RemoveAt(i);
-        _folder.RemoveUnit(last.transform);
         Destroy(last.gameObject);
       }
       
@@ -66,7 +62,6 @@ namespace ToffeeFactory {
       for (int i = _storageViews.Count; i < size; i++) {
         var newView = Instantiate(viewPrefab, NextViewPos(i, size), Quaternion.identity);
         _storageViews.Add(newView);
-        _folder.AddUnit(newView.transform);
         newView.transform.SetParent(transform);
       }
     }
