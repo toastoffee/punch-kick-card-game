@@ -28,7 +28,11 @@ namespace ToffeeFactory {
 
     [SerializeField]
     private LineRenderer rangeCircle;
-    
+
+    [SerializeField]
+    private Color legalColor, illegalColor;
+    private static readonly int Color1 = Shader.PropertyToID("_Color");
+
     private bool checkConnectionLegal(Port a, Port b) {
       return a.type != b.type && !isPipeOverSized;
     }
@@ -110,7 +114,7 @@ namespace ToffeeFactory {
     private void Start() {
 
       BuildCirclePoses(100);
-      
+      rangeCircle.material.SetColor(Color1, legalColor);
       rangeCircle.gameObject.SetActive(false);
       
       previewPipe.gameObject.SetActive(false);
@@ -143,6 +147,8 @@ namespace ToffeeFactory {
         rangeCircle.gameObject.SetActive(true);
         
         if (distance <= pipeMaxLength) {
+          rangeCircle.material.SetColor(Color1, legalColor);
+          
           previewPipe.gameObject.SetActive(true);
           previewPipe.positionCount = poses.Length;
           previewPipe.SetPositions(poses);
@@ -156,6 +162,8 @@ namespace ToffeeFactory {
           isPipeOverSized = false;
         } 
         else {
+          rangeCircle.material.SetColor(Color1, illegalColor);
+          
           forbiddenPipe.gameObject.SetActive(true);
           forbiddenPipe.positionCount = poses.Length;
           forbiddenPipe.SetPositions(poses);

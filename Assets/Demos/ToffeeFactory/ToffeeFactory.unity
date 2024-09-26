@@ -1355,6 +1355,8 @@ MonoBehaviour:
   distText: {fileID: 3019755305656025072}
   pipeMaxLength: 20
   rangeCircle: {fileID: 268722862}
+  legalColor: {r: 0, g: 1, b: 0.034408808, a: 0}
+  illegalColor: {r: 1, g: 0, b: 0.028217316, a: 0}
 --- !u!1001 &1663745247
 PrefabInstance:
   m_ObjectHideFlags: 0
