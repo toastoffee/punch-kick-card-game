@@ -9,5 +9,6 @@ namespace ToffeeFactory {
     public Color unavailColor;
     public Color rangeColor;
     public SpriteRenderer spriteRenderer;
+    public Transform scale;
   }
 }

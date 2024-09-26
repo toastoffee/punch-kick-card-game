@@ -10,5 +10,10 @@ namespace ToffeeFactory {
         port.Disconnect();
       }
     }
+
+    public static void DeleteMachine(GameObject gameObject) {
+      DisconnectAllChildrenPort(gameObject);
+      GameObject.Destroy(gameObject);
+    }
   }
 }

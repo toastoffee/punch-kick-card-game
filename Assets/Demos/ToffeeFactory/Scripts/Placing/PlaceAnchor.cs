@@ -21,7 +21,7 @@ namespace ToffeeFactory {
     private void Awake() {
       var occupyPrefab = Resources.Load<PlaceOccupy>("Prefabs/occupy");
       occupy = Instantiate(occupyPrefab, transform);
-      occupy.transform.localScale = new Vector3(occupySize.x - 0.05f, occupySize.y - 0.05f, 1);
+      occupy.scale.localScale = new Vector3(occupySize.x - 0.05f, occupySize.y - 0.05f, 1);
     }
 
     private void Update() {
@@ -73,6 +73,7 @@ namespace ToffeeFactory {
     }
 
     public void OnRightHoldDone() {
+      TFUtils.DeleteMachine(gameObject);
     }
   }
 

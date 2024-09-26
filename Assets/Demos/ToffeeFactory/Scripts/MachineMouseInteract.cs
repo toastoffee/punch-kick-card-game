@@ -8,10 +8,14 @@ namespace ToffeeFactory {
     public float[] holdTimes;
     public Transform[] holdProgBar;
     public GameObject[] holdProgObj;
+    public GameObject blocker;
     private float[] mouseDownTime = new float[2];
     private int[] holdFlags = new int[2];
     private TimeFlag placeFlag;
-    private const float PLACE_LOCK = 0.25F;
+
+    private bool m_isPlacing;
+
+    private const float PLACE_LOCK = 0.3F;
 
     private void Update() {
       for (int i = 0; i < 2; i++) {
@@ -31,6 +35,10 @@ namespace ToffeeFactory {
             transform.parent.BroadcastMessage(nameof(IMachineMouseCallback.OnRightHoldDone), SendMessageOptions.DontRequireReceiver);
           }
         }
+      }
+
+      if (!m_isPlacing && !placeFlag.IsTrue(PLACE_LOCK)) {
+        blocker.SetActive(false);
       }
     }
 
@@ -75,9 +83,13 @@ namespace ToffeeFactory {
     }
 
     public void OnMachinePlaceStart() {
+      _OnHoldStop(0);
+      m_isPlacing = true;
+      blocker.SetActive(true);
     }
 
     public void OnMachinePlaceEnd() {
+      m_isPlacing = false;
       placeFlag.SetTrue();
       _OnHoldStop(0);
     }
