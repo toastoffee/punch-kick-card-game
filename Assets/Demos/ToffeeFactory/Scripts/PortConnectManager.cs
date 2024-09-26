@@ -15,10 +15,18 @@ namespace ToffeeFactory {
     private LineRenderer previewPipe;
 
     [SerializeField]
+    private LineRenderer forbiddenPipe;
+
+    [SerializeField]
     private TMP_Text distText;
+
+    [SerializeField]
+    private float pipeMaxLength;
+    
+    private bool isPipeOverSized = false;
     
     private bool checkConnectionLegal(Port a, Port b) {
-      return a.type != b.type;
+      return a.type != b.type && !isPipeOverSized;
     }
     
     public void HandleConnect(Port port) {
@@ -87,6 +95,7 @@ namespace ToffeeFactory {
     
     private void Start() {
       previewPipe.gameObject.SetActive(false);
+      forbiddenPipe.gameObject.SetActive(false);
       
       distText.gameObject.SetActive(false);
     }
@@ -109,19 +118,37 @@ namespace ToffeeFactory {
         Vector3 centerPos = new Vector3();
         Vector3[] poses = BeautifyPath(m_portInConnecting.transform.position, worldPosition, 0.25f, ref centerPos);
         float distance = Distance(poses);
-        
-        
-        previewPipe.gameObject.SetActive(true);
-        previewPipe.positionCount = poses.Length;
-        previewPipe.SetPositions(poses);
-        
-        distText.gameObject.SetActive(true);
-        distText.transform.position = centerPos;
-        distText.text = "管道距离:" + $"{distance:N1}m";
 
+        if (distance <= pipeMaxLength) {
+          previewPipe.gameObject.SetActive(true);
+          previewPipe.positionCount = poses.Length;
+          previewPipe.SetPositions(poses);
+        
+          distText.gameObject.SetActive(true);
+          distText.transform.position = centerPos;
+          distText.text = "管道距离:" + $"{distance:N1}m";
+          
+          forbiddenPipe.gameObject.SetActive(false);
+
+          isPipeOverSized = false;
+        } 
+        else {
+          forbiddenPipe.gameObject.SetActive(true);
+          forbiddenPipe.positionCount = poses.Length;
+          forbiddenPipe.SetPositions(poses);
+        
+          distText.gameObject.SetActive(true);
+          distText.transform.position = centerPos;
+          distText.text = "管道过长！！！" + $"({distance:N1}m)";
+          
+          previewPipe.gameObject.SetActive(false);
+
+          isPipeOverSized = true;
+        }
 
       } else {
         previewPipe.gameObject.SetActive(false);
+        forbiddenPipe.gameObject.SetActive(false);
         distText.gameObject.SetActive(false);
       }
       
