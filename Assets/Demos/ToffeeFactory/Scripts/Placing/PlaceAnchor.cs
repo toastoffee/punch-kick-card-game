@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace ToffeeFactory {
-  public class PlaceAnchor : MonoBehaviour, IMachineMouseCallback {
+  public class PlaceAnchor : MonoBehaviour, IMachineMouseHoldCallback {
     public Vector2 anchorOffset;
     public Vector2Int occupySize;
     public bool disableReplace;

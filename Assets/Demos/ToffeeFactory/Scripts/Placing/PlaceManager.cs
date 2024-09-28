@@ -96,8 +96,10 @@ namespace ToffeeFactory {
           }
           Status.Instance.RemoveMoney(m_ctx.buyListItem.price);
           m_ctx.placingAnchor.OnEndPlace();
-          m_ctx.placingAnchor = Instantiate(m_ctx.buyListItem.placingPrefab);
-          m_ctx.placingAnchor.transform.position = 99999 * Vector2.one;
+
+          var cached = m_ctx.buyListItem;
+          m_ctx = new PlaceContext();
+          m_ctx.StartBuyPlace(cached);
         } else if (m_ctx.state == State.RE_PLACING) {
           m_ctx.placingAnchor.OnEndPlace();
           m_ctx.placingAnchor = null;
