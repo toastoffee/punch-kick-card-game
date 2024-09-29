@@ -12,7 +12,15 @@ namespace ToffeeFactory {
 
     public bool typeRestrict => _typeRestrict;
     public StuffType type => _type;
-    public int capacity => _capacity;
+    public int capacity {
+      get => _capacity;
+      set {
+        _capacity = value;
+        if (_count > _capacity) {
+          _count = _capacity;
+        }
+      }
+    }
     public int count => _count;
     public bool isFull => _count == _capacity;
     public bool isEmpty => _count == 0;
