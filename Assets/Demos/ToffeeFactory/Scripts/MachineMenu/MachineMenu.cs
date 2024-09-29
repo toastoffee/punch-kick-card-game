@@ -13,15 +13,21 @@ namespace ToffeeFactory {
       public SingleStorageView[] storageViews;
       public IProduceFormulaHodler formulaHolder;
       public List<ProduceFormula> formulaOptions;
+      public SeqNumHolder seqNumHolder;
+      private SeqNumChecker m_infoSeqChecker;
 
       public bool isRunning { get; private set; }
       public void Start(GameObject machineObj) {
         isRunning = true;
         this.machineObj = machineObj;
+        seqNumHolder = machineObj.GetComponentInChildren<SeqNumHolder>();
         Instance.m_showStateTween.GoToState(ShowState.SHOW);
 
-        RenderStorage();
+        RenderMachineInfo(machineObj);
+      }
 
+      private void RenderMachineInfo(GameObject machineObj) {
+        RenderStorage();
         var formulaHolder = machineObj.GetComponentInChildren<IProduceFormulaHodler>();
 
         Instance.formulaGroupRoot.gameObject.SetActive(formulaHolder != null);
@@ -47,6 +53,9 @@ namespace ToffeeFactory {
         } else {
           Instance.formulaNameText.text = formula.formulaName;
           Instance.formulaContentText.text = FormulaLibrary.GetFormulaStr(formula);
+        }
+        if (m_infoSeqChecker.Check(seqNumHolder.Read("info"))) {
+          RenderMachineInfo(machineObj);
         }
       }
 

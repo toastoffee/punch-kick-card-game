@@ -118,6 +118,8 @@ namespace ToffeeFactory {
       for (int i = 0; i < outPorts.Count; i++) {
         outPorts[i].typeText.text = StuffQuery.GetRichText(f.products[i].type);
       }
+
+      NotifyMachineSeqNum("info");
     }
 
     private void Update() {
