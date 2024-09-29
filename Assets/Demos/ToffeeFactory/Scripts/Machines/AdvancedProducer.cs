@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
 namespace ToffeeFactory {
-  public class AdvancedProducer : AdvancedMachine {
+  public class AdvancedProducer : AdvancedMachine, IProduceFormulaHodler {
 
     public List<Port> inPorts;
     public List<Port> outPorts;
@@ -48,6 +48,8 @@ namespace ToffeeFactory {
     [SerializeField]
     private CustomButton formulaSelector;
 
+    private static ResourcesLoadCache<FormulaOptionHolder> holderPrefabCache = new ResourcesLoadCache<FormulaOptionHolder>("Prefabs/formula_holder");
+
     private void Start() {
 
       // set ports belonging
@@ -76,6 +78,8 @@ namespace ToffeeFactory {
       foreach (var f in familyFormulas) {
         var selector = Instantiate(formulaSelector, formulaSelectorFolder.transform.position, Quaternion.identity);
         selector.transform.localScale = Vector3.zero;
+        var holder = Instantiate(holderPrefabCache.Res, selector.transform);
+        holder.formula = f;
 
         formulaSelectorFolder.AddUnit(selector.transform);
 
@@ -210,6 +214,14 @@ namespace ToffeeFactory {
       foreach (var port in inPorts) {
         yield return port;
       }
+    }
+
+    public ProduceFormula GetProduceFormula() {
+      return formula;
+    }
+
+    public void SetProduceFormula(ProduceFormula formula) {
+      SwitchFormula(formula);
     }
   }
 }
