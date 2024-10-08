@@ -9,9 +9,11 @@ namespace ToffeeFactory {
     public FormulaFamily family;
     public string formulaName;
     public float produceInterval;
-    public List<StuffLoad> ingredients;
-    public List<StuffLoad> products;
+    public List<StuffLoad> ingredients = new List<StuffLoad>();
+    public List<StuffLoad> products = new List<StuffLoad>();
 
+    public StuffType storeType;
+    
     public List<StuffType> GetStuffInvolved() {
       List<StuffType> types = new List<StuffType>();
 

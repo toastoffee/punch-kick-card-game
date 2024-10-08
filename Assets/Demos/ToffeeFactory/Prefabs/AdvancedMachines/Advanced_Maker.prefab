@@ -87,7 +87,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anchorOffset: {x: 0.5, y: 0.5}
   occupySize: {x: 2, y: 2}
-  isPlacing: 0
   disableReplace: 0
 --- !u!1 &1582694046802192035
 GameObject:
@@ -275,7 +274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &109595529404200364
 Transform:
   m_ObjectHideFlags: 0

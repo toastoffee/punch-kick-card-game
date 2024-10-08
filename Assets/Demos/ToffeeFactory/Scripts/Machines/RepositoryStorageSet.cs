@@ -14,6 +14,7 @@ namespace ToffeeFactory {
     
     private List<SingleStorage> storages;
 
+    [Header("所有注册的仓库")]
     private List<AdvancedRepository> _repos = new List<AdvancedRepository>();
 
     protected override void Awake() {
@@ -41,6 +42,10 @@ namespace ToffeeFactory {
       UpdateRepositoryLimit();
     }
 
+    public void UpdateTypes() {
+      UpdateRepositoryLimit();
+    }
+
     private void UpdateRepositoryLimit() {
       foreach (var sto in storages) {
         
@@ -52,6 +57,9 @@ namespace ToffeeFactory {
         }
 
         sto._capacity = capacity;
+        
+        // cut off
+        sto._count = Mathf.Min(sto.count, sto._capacity);
       }
     }
 
