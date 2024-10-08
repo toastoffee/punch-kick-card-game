@@ -81,6 +81,10 @@ namespace ToffeeFactory {
           
           port.transform.DOLocalMove(dir, 0.1f);
         }
+        
+        // switch collider
+        var occupyCollider = m_ctx.placingAnchor.GetComponentInChildren<BoxCollider2D>();
+        occupyCollider.size = new Vector2(occupyCollider.size.y, occupyCollider.size.x);
       }
 
       var cellSize = Consts.cellSize;
