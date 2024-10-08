@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 namespace ToffeeFactory {
-  public class PlaceAnchor : MonoBehaviour, IMachineMouseHoldCallback {
+  public class PlaceAnchor : MonoBehaviour, IMachineMouseHoldCallback, PlaceManager.IRotHandler {
     public Vector2 anchorOffset;
     public Vector2Int occupySize;
     public bool disableReplace;
@@ -74,6 +75,11 @@ namespace ToffeeFactory {
 
     public void OnRightHoldDone() {
       TFUtils.DeleteMachine(gameObject);
+    }
+
+    public void OnPlaceRot(PlaceManager.Rot rot) {
+      var up = PlaceManager.rot2up[rot];
+      occupy.transform.DORotateQuaternion(Quaternion.LookRotation(Vector3.forward, up), 0.1f);
     }
   }
 

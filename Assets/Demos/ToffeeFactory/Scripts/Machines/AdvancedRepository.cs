@@ -6,9 +6,9 @@ using UnityEngine;
 namespace ToffeeFactory {
   public class AdvancedRepository : AdvancedMachine, IProduceFormulaHodler {
     public List<Port> inPorts;
-    
+
     public StuffType _stuffType = StuffType.NONE;
-    
+
     private static ResourcesLoadCache<FormulaOptionHolder> holderPrefabCache = new ResourcesLoadCache<FormulaOptionHolder>("Prefabs/formula_holder");
 
     private void Start() {
@@ -16,24 +16,24 @@ namespace ToffeeFactory {
         port.machineBelong = this;
       }
 
-      foreach (var type in RepositoryStorageSet.Instance._stuffTypes) {
+      foreach (var config in RepositoryStorageSet.Instance._stuffTypes) {
         ProduceFormula f = new ProduceFormula();
-        f.storeType = type;
-        f.formulaName = "储存" + StuffQuery.GetRichText(type);
-        
+        f.storeType = config.type;
+        f.formulaName = "储存" + StuffQuery.GetRichText(config.type);
+
         var holder = Instantiate(holderPrefabCache.Res, transform);
         holder.formula = f;
 
       }
-      
-      _stuffType = RepositoryStorageSet.Instance._stuffTypes[0];
-      
+
+      _stuffType = RepositoryStorageSet.Instance._stuffTypes[0].type;
+
       RepositoryStorageSet.Instance.Register(this);
     }
 
     private void OnDestroy() {
       if (RepositoryStorageSet.Instance != null) {
-        RepositoryStorageSet.Instance.Unregister(this); 
+        RepositoryStorageSet.Instance.Unregister(this);
       }
     }
 
@@ -44,8 +44,8 @@ namespace ToffeeFactory {
       }
       return false;
     }
-    
-    
+
+
     public override IEnumerable<Port> GetAllPorts() {
       return inPorts;
     }
@@ -56,7 +56,6 @@ namespace ToffeeFactory {
       return formula;
     }
     public void SetProduceFormula(ProduceFormula formula) {
-      Debug.Log(formula.formulaName);
       if (_stuffType != formula.storeType) {
         _stuffType = formula.storeType;
         RepositoryStorageSet.Instance.UpdateTypes();

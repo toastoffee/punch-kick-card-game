@@ -21,7 +21,7 @@ namespace ToffeeFactory {
       // 1. new storages space
       _storages = new List<SingleStorage>();
       for (int i = 0; i < storageNum; i++) {
-        _storages.Add(new SingleStorage(64));
+        _storages.Add(new SingleStorage(10));
       }
       
       // 2. initialize storage views

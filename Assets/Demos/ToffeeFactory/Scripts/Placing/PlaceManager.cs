@@ -16,6 +16,17 @@ namespace ToffeeFactory {
       UP, RIGHT, DOWN, LEFT
     }
 
+    public static readonly Dictionary<Rot, Vector2> rot2up = new Dictionary<Rot, Vector2>{
+      {Rot.UP, Vector2.up },
+      {Rot.RIGHT, Vector2.right},
+      {Rot.DOWN, Vector2.down},
+      {Rot.LEFT, Vector2.left},
+    };
+
+    public interface IRotHandler {
+      void OnPlaceRot(Rot rot);
+    }
+
     public struct PlaceContext {
       public State state;
       public PlaceAnchor placingAnchor;
@@ -72,19 +83,17 @@ namespace ToffeeFactory {
 
       if (Input.GetKeyDown(KeyCode.R)) {
         m_ctx.placingRot = (Rot)(((int)m_ctx.placingRot + 1) % 4);
-        
+
         // rotate ports
         var ports = m_ctx.placingAnchor.GetComponentsInChildren<Port>();
         foreach (var port in ports) {
           var dir = port.transform.localPosition;
           dir = dir.Rotate(Vector3.forward, -90f);
-          
+
           port.transform.DOLocalMove(dir, 0.1f);
         }
-        
-        // switch collider
-        var occupyCollider = m_ctx.placingAnchor.GetComponentInChildren<BoxCollider2D>();
-        occupyCollider.size = new Vector2(occupyCollider.size.y, occupyCollider.size.x);
+
+        m_ctx.placingAnchor.BroadcastMessage(nameof(IRotHandler.OnPlaceRot), m_ctx.placingRot, SendMessageOptions.DontRequireReceiver);
       }
 
       var cellSize = Consts.cellSize;
@@ -100,7 +109,7 @@ namespace ToffeeFactory {
 
       PlaceAnchor.isShowingRange = true;
       m_ctx.placingAnchor.transform.position = pos + offset;
-      m_ctx.placingAnchor.transform.rotation = quaternion.identity;
+      //m_ctx.placingAnchor.transform.rotation = rotation;
 
       if (Input.GetMouseButtonDown(0)) {
         if (!m_ctx.placingAnchor.CanPlace) {
@@ -127,8 +136,7 @@ namespace ToffeeFactory {
           var cached = m_ctx.buyListItem;
           m_ctx = new PlaceContext();
           m_ctx.StartBuyPlace(cached);
-        }
-        else if (m_ctx.state == State.RE_PLACING) {
+        } else if (m_ctx.state == State.RE_PLACING) {
           m_ctx.placingAnchor.OnEndPlace();
           m_ctx.placingAnchor = null;
           EndPlace();
