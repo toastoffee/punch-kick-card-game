@@ -1,5 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace ToffeeFactory {
@@ -69,6 +72,15 @@ namespace ToffeeFactory {
 
       if (Input.GetKeyDown(KeyCode.R)) {
         m_ctx.placingRot = (Rot)(((int)m_ctx.placingRot + 1) % 4);
+        
+        // rotate ports
+        var ports = m_ctx.placingAnchor.GetComponentsInChildren<Port>();
+        foreach (var port in ports) {
+          var dir = port.transform.localPosition;
+          dir = dir.Rotate(Vector3.forward, -90f);
+          
+          port.transform.DOLocalMove(dir, 0.1f);
+        }
       }
 
       var cellSize = Consts.cellSize;
@@ -84,7 +96,7 @@ namespace ToffeeFactory {
 
       PlaceAnchor.isShowingRange = true;
       m_ctx.placingAnchor.transform.position = pos + offset;
-      m_ctx.placingAnchor.transform.rotation = rotation;
+      m_ctx.placingAnchor.transform.rotation = quaternion.identity;
 
       if (Input.GetMouseButtonDown(0)) {
         if (!m_ctx.placingAnchor.CanPlace) {
