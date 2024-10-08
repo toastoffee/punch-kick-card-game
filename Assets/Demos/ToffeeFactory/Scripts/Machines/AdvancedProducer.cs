@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 
 namespace ToffeeFactory {
   public class AdvancedProducer : AdvancedMachine, IProduceFormulaHodler {
-
     public List<Port> inPorts;
     public List<Port> outPorts;
 
