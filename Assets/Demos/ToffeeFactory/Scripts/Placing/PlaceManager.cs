@@ -90,17 +90,29 @@ namespace ToffeeFactory {
         if (!m_ctx.placingAnchor.CanPlace) {
           return;
         }
-        if (m_ctx.state == State.BUY_PLACING) {
-          if (!Status.Instance.CanAfford(m_ctx.buyListItem.price)) {
+        // if (m_ctx.state == State.BUY_PLACING) {
+        //   if (!Status.Instance.CanAfford(m_ctx.buyListItem.price)) {
+        //     return;
+        //   }
+        //   Status.Instance.RemoveMoney(m_ctx.buyListItem.price);
+        //   m_ctx.placingAnchor.OnEndPlace();
+        //
+        //   var cached = m_ctx.buyListItem;
+        //   m_ctx = new PlaceContext();
+        //   m_ctx.StartBuyPlace(cached);
+        // }
+        if (m_ctx.state == State.BUY_PLACING) {   //! modified
+          if (!RepositoryStorageSet.Instance.IsSufficient(m_ctx.buyListItem.costs)) {
             return;
           }
-          Status.Instance.RemoveMoney(m_ctx.buyListItem.price);
+          RepositoryStorageSet.Instance.TryConsume(m_ctx.buyListItem.costs);
           m_ctx.placingAnchor.OnEndPlace();
 
           var cached = m_ctx.buyListItem;
           m_ctx = new PlaceContext();
           m_ctx.StartBuyPlace(cached);
-        } else if (m_ctx.state == State.RE_PLACING) {
+        }
+        else if (m_ctx.state == State.RE_PLACING) {
           m_ctx.placingAnchor.OnEndPlace();
           m_ctx.placingAnchor = null;
           EndPlace();

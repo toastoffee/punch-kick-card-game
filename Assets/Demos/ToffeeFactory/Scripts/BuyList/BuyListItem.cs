@@ -12,9 +12,20 @@ namespace ToffeeFactory {
 
     public TMP_Text nameText, priceText;
 
+    public List<StuffLoad> costs;
+
     public void Update() {
       nameText.text = buyName;
-      priceText.text = price.ToString();
+
+      string costStr = "";
+
+      for (int i = 0; i < costs.Count; i++) {
+        if (i != 0) {
+          costStr += " ";
+        }
+        costStr += costs[i].count + "" + StuffQuery.GetRichText(costs[i].type);
+      }
+      priceText.text = costStr;
     }
 
     public void EventOnClick() {
