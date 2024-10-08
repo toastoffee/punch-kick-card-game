@@ -79,6 +79,20 @@ namespace ToffeeFactory {
       }
     }
 
+    public void TryConsume(List<StuffLoad> loads) {
+      foreach (var load in loads) {
+        TryConsume(load);
+      }
+    }
+
+    public bool IsSufficient(List<StuffLoad> loads) {
+      foreach (var load in loads) {
+        if (!IsSufficient(load)) {
+          return false;
+        }
+      }
+      return true;
+    }
     
     public bool IsSufficient(StuffLoad load) {
       var copy = load.Copy();

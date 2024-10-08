@@ -141,11 +141,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6366903094405284236, guid: b2cb1aea922864861a895793ff65ce1e, type: 3}
       propertyPath: _stuffTypes.Array.data[0]
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6366903094405284236, guid: b2cb1aea922864861a895793ff65ce1e, type: 3}
       propertyPath: _stuffTypes.Array.data[1]
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7738171161073735358, guid: b2cb1aea922864861a895793ff65ce1e, type: 3}
       propertyPath: m_LocalPosition.x
