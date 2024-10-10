@@ -19,19 +19,28 @@ namespace ToffeeFactory {
         case StuffType.CooperOre:
           return "<color=#27BC4F>铜矿石</color>";
         
+        
         case StuffType.IronIngot:
           return "<color=#939393>铁锭</color>";
         case StuffType.CooperIngot:
           return "<color=#FFAC00>铜锭</color>";
-        
+        case StuffType.Magnet:
+          return "<color=#828282>磁铁</color>";
         
         case StuffType.CooperWire:
           return "<color=#FFBD00>铜线</color>";
         case StuffType.IronPlate:
           return "<color=#B4B4B4>铁板</color>";
+        case StuffType.MagnetWire:
+          return "<color=#F7D94C>磁线圈</color>";
         
         case StuffType.CircuitBoard:
           return "<color=#004B0B>电路板</color>";
+        
+        case StuffType.MagnetMatrix:
+          return "<color=#A5DEE4>电磁矩阵</color>";
+
+
       }
 
       return "NONE";
