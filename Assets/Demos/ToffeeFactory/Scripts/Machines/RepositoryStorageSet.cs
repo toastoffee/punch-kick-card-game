@@ -57,6 +57,10 @@ namespace ToffeeFactory {
       UpdateRepositoryLimit();
     }
 
+    public List<SingleStorage> GetStorages() {
+      return storages;
+    }
+
     private void UpdateRepositoryLimit() {
       foreach (var sto in storages) {
 
