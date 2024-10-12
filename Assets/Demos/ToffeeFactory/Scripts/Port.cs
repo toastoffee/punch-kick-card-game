@@ -87,20 +87,16 @@ namespace ToffeeFactory {
       }
 
       spr.transform.DOComplete(true);
-      spr.transform.localScale = Vector3.one;
       Sequence sequence = DOTween.Sequence();
       sequence.Append(spr.transform.DOScale(pressedShrinkSize * Vector3.one, pressedShrinkDuration));
-      sequence.Append(spr.transform.DOScale(Vector3.one, hoverSwellDuration));
       sequence.Append(spr.transform.DOScale(hoverSwellSize * Vector3.one, hoverSwellDuration));
     }
     public void OnPointerEnter(PointerEventData eventData) {
       spr.transform.DOComplete(true);
-      spr.transform.localScale = Vector3.one;
       spr.transform.DOScale(hoverSwellSize * Vector3.one, hoverSwellDuration);
     }
     public void OnPointerExit(PointerEventData eventData) {
       spr.transform.DOComplete(true);
-      spr.transform.localScale = Vector3.one;
       spr.transform.DOScale(Vector3.one, recoverDuration);
     }
   }
