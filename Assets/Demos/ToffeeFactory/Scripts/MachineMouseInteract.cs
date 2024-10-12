@@ -44,7 +44,7 @@ namespace ToffeeFactory {
         }
       }
 
-      if (!m_isPlacing && !placeFlag.IsTrue(PLACE_LOCK)) {
+      if (!m_isPlacing && !placeFlag.LessThan(PLACE_LOCK)) {
         blocker.SetActive(false);
       }
     }
@@ -56,7 +56,7 @@ namespace ToffeeFactory {
     }
 
     public void OnPointerDown(PointerEventData eventData) {
-      if (placeFlag.IsTrue(PLACE_LOCK)) {
+      if (placeFlag.LessThan(PLACE_LOCK)) {
         return;
       }
       if (eventData.button >= PointerEventData.InputButton.Middle) {
@@ -70,7 +70,7 @@ namespace ToffeeFactory {
     }
 
     public void OnPointerExit(PointerEventData eventData) {
-      if (placeFlag.IsTrue(PLACE_LOCK)) {
+      if (placeFlag.LessThan(PLACE_LOCK)) {
         return;
       }
       if (eventData.button >= PointerEventData.InputButton.Middle) {
@@ -80,7 +80,7 @@ namespace ToffeeFactory {
     }
 
     public void OnPointerUp(PointerEventData eventData) {
-      if (placeFlag.IsTrue(PLACE_LOCK)) {
+      if (placeFlag.LessThan(PLACE_LOCK)) {
         return;
       }
       if (eventData.button >= PointerEventData.InputButton.Middle) {
@@ -103,7 +103,7 @@ namespace ToffeeFactory {
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-      if (placeFlag.IsTrue(PLACE_LOCK)) {
+      if (placeFlag.LessThan(PLACE_LOCK)) {
         return;
       }
       BroadcastMessage(nameof(IMachineMouseClickCallback.OnMachineClick), (int)eventData.button, SendMessageOptions.DontRequireReceiver);

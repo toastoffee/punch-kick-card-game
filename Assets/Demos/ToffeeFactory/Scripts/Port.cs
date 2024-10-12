@@ -65,14 +65,7 @@ namespace ToffeeFactory {
     private void Start() {
       spr.sprite = unConnectSprite;
 
-      var pos = transform.position;
-      pos += new Vector3(2, 2, 0);
-      pos /= 4;
-      pos.x = Mathf.RoundToInt(pos.x);
-      pos.y = Mathf.RoundToInt(pos.y);
-      pos *= 4;
-      pos -= new Vector3(2, 2, 0);
-      transform.position = pos;
+      transform.position = TFUtils.SnapToGrid(transform.position);
     }
 
     private void Update() {

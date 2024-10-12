@@ -197,6 +197,15 @@ public static class CSharpUtils {
     }
     return dict[key];
   }
+
+  public static IEnumerable<T> Union<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs) {
+    foreach (var item in lhs) {
+      yield return item;
+    }
+    foreach (var item in rhs) {
+      yield return item;
+    }
+  }
 }
 public struct SeqNumChecker {
   private int m_cachedNum;

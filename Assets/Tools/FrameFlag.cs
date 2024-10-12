@@ -58,7 +58,7 @@ public struct TimeFlag {
     value = true;
     setTime = Time.time;
   }
-  public bool IsTrue(float duration) {
+  public bool LessThan(float duration) {
     return value && ((Time.time - setTime) <= duration);
   }
 }
