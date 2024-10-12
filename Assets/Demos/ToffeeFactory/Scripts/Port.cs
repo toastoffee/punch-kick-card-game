@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace ToffeeFactory {
+  
 
   public class Port : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
 
@@ -38,6 +39,29 @@ namespace ToffeeFactory {
 
     public TMP_Text typeText, countText;
 
+    private Tween _exitTween, _enterTween, _clickTween;
+    
+    private Tween exitTween {
+      set {
+        _exitTween = value;
+      }
+      get => _exitTween;
+    }
+    
+    private Tween enterTween {
+      set {
+        _enterTween = value;
+      }
+      get => _enterTween;
+    }
+    
+    private Tween clickTween {
+      set {
+        _clickTween = value;
+      }
+      get => _clickTween;
+    }
+    
     private void Start() {
       spr.sprite = unConnectSprite;
 
@@ -85,19 +109,20 @@ namespace ToffeeFactory {
       } else if (eventData.button == PointerEventData.InputButton.Right) {
         Disconnect();
       }
+      
 
-      spr.transform.DOComplete(true);
       Sequence sequence = DOTween.Sequence();
       sequence.Append(spr.transform.DOScale(pressedShrinkSize * Vector3.one, pressedShrinkDuration));
       sequence.Append(spr.transform.DOScale(hoverSwellSize * Vector3.one, hoverSwellDuration));
+      clickTween = sequence;
     }
     public void OnPointerEnter(PointerEventData eventData) {
-      spr.transform.DOComplete(true);
-      spr.transform.DOScale(hoverSwellSize * Vector3.one, hoverSwellDuration);
+      enterTween = spr.transform.DOScale(hoverSwellSize * Vector3.one, hoverSwellDuration);
     }
     public void OnPointerExit(PointerEventData eventData) {
-      spr.transform.DOComplete(true);
-      spr.transform.DOScale(Vector3.one, recoverDuration);
+      enterTween?.Kill();
+      clickTween?.Kill();
+      exitTween = spr.transform.DOScale(Vector3.one, recoverDuration);
     }
   }
 
