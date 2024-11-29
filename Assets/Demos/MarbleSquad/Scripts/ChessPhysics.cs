@@ -22,6 +22,7 @@ namespace MarbleSquad {
         public bool isMain = false;
 
         public Transform visualPart;
+        
     
         // Start is called before the first frame update
         void Start() {
@@ -158,8 +159,11 @@ namespace MarbleSquad {
             Vector2 I_new = new Vector2(x, 0);
             Vector2 I_orig = I_new.ToCoordination(new_x_axis, new_y_axis, Vector2.right, Vector2.up);
             
-            b._velocity += I_orig / b._mass;
-            a._velocity -= I_orig / a._mass;
+            // b._velocity += I_orig / b._mass;
+            b.AddForce(I_orig);
+            
+            // a._velocity -= I_orig / a._mass;
+            a.AddForce(-I_orig);
             
             
             // Calculate damage
@@ -191,20 +195,20 @@ namespace MarbleSquad {
             // apply visual effects 
             float a_angle = Mathf.Atan2(a._velocity.y, a._velocity.x) * Mathf.Rad2Deg;
             float b_angle = Mathf.Atan2(b._velocity.y, b._velocity.x) * Mathf.Rad2Deg;
-            a.visualPart.DORotate(new Vector3(0, 0, a_angle), 0.1f);
-            b.visualPart.DORotate(new Vector3(0, 0, b_angle), 0.1f);
+            a.visualPart.DORotate(new Vector3(0, 0, a_angle), 0.2f);
+            b.visualPart.DORotate(new Vector3(0, 0, b_angle), 0.2f);
 
             Sequence a_seq = DOTween.Sequence();
             Sequence b_seq = DOTween.Sequence();
+            
+            a_seq.Append(a.visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
+            a_seq.Append(a.visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+            a_seq.Append(a.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
 
-            a_seq.Append(a.visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.05f));
-            a_seq.Append(a.visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.05f));
-            a_seq.Append(a.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.05f));
-
-            b_seq.Append(b.visualPart.DOScale(new Vector3(0.9f, 1.1f, 1.0f), 0.05f));
-            b_seq.Append(b.visualPart.DOScale(new Vector3(1.1f, 0.9f, 1.0f), 0.05f));
-            b_seq.Append(b.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.05f));
-
+            b_seq.Append(b.visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
+            b_seq.Append(b.visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+            b_seq.Append(b.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
+            
         }
 
         // private void OnTriggerEnter2D(Collider2D other) {
@@ -238,10 +242,22 @@ namespace MarbleSquad {
 
             if (other.transform.CompareTag("BarrierX")) {
                 _velocity = new Vector2(-_velocity.x, _velocity.y) * PhysicsConsts.Instance.bounce_decay;
+                
+                visualPart.DORotate(new Vector3(0, 0, 90), 0.2f);
+                Sequence seq = DOTween.Sequence();
+                seq.Append(visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
             }
             
             if (other.transform.CompareTag("BarrierY")) {
                 _velocity = new Vector2(_velocity.x, -_velocity.y) * PhysicsConsts.Instance.bounce_decay;
+                
+                visualPart.DORotate(new Vector3(0, 0, 0), 0.2f);
+                Sequence seq = DOTween.Sequence();
+                seq.Append(visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
             }
         }
     }
