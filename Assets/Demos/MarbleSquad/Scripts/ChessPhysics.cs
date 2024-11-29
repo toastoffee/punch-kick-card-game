@@ -45,8 +45,7 @@ namespace MarbleSquad {
 
 
             if (Input.GetKeyDown(KeyCode.J) && isMain) {
-                AddForce(Vector2.right * 5.0f);
-                
+                AddForce(Vector2.right * 12.0f);
             }
         }
 
@@ -83,14 +82,54 @@ namespace MarbleSquad {
             // Vector2 v1_new = v1_h_new + v1_v_new;
             // Vector2 v2_new = v2_h_new + v2_v_new;
             
-            float v1_x_new = (2 * b._mass * b._velocity.x + (a._mass - b._mass) * a._velocity.x) / (a._mass + b._mass);
-            float v2_x_new = (2 * a._mass * a._velocity.x + (b._mass - a._mass) * b._velocity.x) / (a._mass + b._mass);
+            // ver 2 
+            // float v1_x_new = (2 * b._mass * b._velocity.x + (a._mass - b._mass) * a._velocity.x) / (a._mass + b._mass);
+            // float v2_x_new = (2 * a._mass * a._velocity.x + (b._mass - a._mass) * b._velocity.x) / (a._mass + b._mass);
+            //
+            // float v1_y_new = (2 * b._mass * b._velocity.y + (a._mass - b._mass) * a._velocity.y) / (a._mass + b._mass);
+            // float v2_y_new = (2 * a._mass * a._velocity.y + (b._mass - a._mass) * b._velocity.y) / (a._mass + b._mass);
+            //
+            // a._velocity = new Vector2(v1_x_new, v1_y_new);
+            // b._velocity = new Vector2(v2_x_new, v2_y_new);
             
-            float v1_y_new = (2 * b._mass * b._velocity.y + (a._mass - b._mass) * a._velocity.y) / (a._mass + b._mass);
-            float v2_y_new = (2 * a._mass * a._velocity.y + (b._mass - a._mass) * b._velocity.y) / (a._mass + b._mass);
+            // ver 3
+            // Vector2 I_dir = (b.transform.position - a.transform.position).normalized;
+            // Vector2 velocity_diff = b._velocity - a._velocity;
+            //
+            // float alpha = I_dir.y / I_dir.x;
+            //
+            // float numerator = -2.0f * a._mass * b._mass * (velocity_diff.x + (1.0f + alpha) * velocity_diff.y);
+            // float denominator = (a._mass + b._mass) * (1.0f + alpha * alpha);
+            //
+            // float x = numerator / denominator;
+            //
+            // // I to B
+            // Vector2 I = new Vector2(x, alpha * x);
+            //
+            // b._velocity += I / b._mass;
+            // a._velocity -= I / a._mass;
+            
+            
+            // ver 4
+            Vector2 I_dir = (b.transform.position - a.transform.position).normalized;
+            Vector2 new_x_axis = I_dir;
+            Vector2 new_y_axis = new Vector2(-I_dir.y, I_dir.x);
 
-            a._velocity = new Vector2(v1_x_new, v1_y_new);
-            b._velocity = new Vector2(v2_x_new, v2_y_new);
+            Vector2 new_coord_a_v = a._velocity.ToCoordination(Vector2.right, Vector2.up, new_x_axis, new_y_axis);
+            Vector2 new_coord_b_v = b._velocity.ToCoordination(Vector2.right, Vector2.up, new_x_axis, new_y_axis);
+            
+            Vector2 velocity_diff = new_coord_b_v - new_coord_a_v;
+
+            float numerator = -2.0f * a._mass * b._mass * velocity_diff.x;
+            float denominator = (a._mass + b._mass) * 1.0f;
+
+            float x = numerator / denominator;
+            Vector2 I_new = new Vector2(x, 0);
+            Vector2 I_orig = I_new.ToCoordination(new_x_axis, new_y_axis, Vector2.right, Vector2.up);
+            
+            b._velocity += I_orig / b._mass;
+            a._velocity -= I_orig / a._mass;
+
         }
 
         private void OnTriggerEnter2D(Collider2D other) {
