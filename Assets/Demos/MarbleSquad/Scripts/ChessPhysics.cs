@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace MarbleSquad {
@@ -29,7 +31,7 @@ namespace MarbleSquad {
             // apply friction (if moves)
             if (_isMoving) {
                 Vector2 friction_dir = -_velocity.normalized;
-                Vector2 friction_f = friction_dir * (PhysicsConsts.Instance.s_mu * _mass * PhysicsConsts.Instance.g);
+                Vector2 friction_f = friction_dir * (PhysicsConsts.Instance.d_mu * _mass * PhysicsConsts.Instance.g);
                 AddForce(friction_f * Time.deltaTime);
 
 
@@ -37,15 +39,34 @@ namespace MarbleSquad {
                     _velocity = Vector2.zero;
                 }
             }
+
+            if (Input.GetMouseButtonDown(0) && isMain) {
+                Vector3 cursorPos = Input.mousePosition;
+                Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(cursorPos);
+
+                Vector2 cursorWorldVec2 = cursorWorldPos.ToVec2();
+
+                Vector2 force = cursorWorldVec2 - transform.position.ToVec2();
+                
+                AddForce(force * 2.0f);
+            }
+
+            if (Input.GetKeyDown(KeyCode.J) && isMain) {
+                AddForce(Vector2.right * 10.0f);
+            }
+            
             
             // move as speed (if moves)
             if (_isMoving) {
                 transform.position += _velocity.ToVec3() * Time.deltaTime;
             }
 
+            if (_isMoving) {
+                // rotate to its forward
+                var z_deg = Vector2.Angle(Vector2.right, _velocity);
+                var rot = Quaternion.Euler(.0f, .0f, z_deg);
 
-            if (Input.GetKeyDown(KeyCode.J) && isMain) {
-                AddForce(Vector2.right * 12.0f);
+                transform.rotation = rot;
             }
         }
 
@@ -66,6 +87,13 @@ namespace MarbleSquad {
         }
 
         public static void HandleChessCollide(ChessPhysics a, ChessPhysics b) {
+
+            bool is_collision_opposite = Vector2.Dot(a._velocity, b._velocity) < 0.0f;
+            Vector2 collidePos = (a.transform.position + b.transform.position) / 2.0f;
+            
+            Vector2 a_v_orig = a._velocity;
+            Vector2 b_v_orig = b._velocity;
+            
             // Vector2 F_dir = (a.transform.position - b.transform.position).normalized;
             // Vector2 F_v_dir = new Vector2(- F_dir.y, F_dir.x);
             //
@@ -98,7 +126,7 @@ namespace MarbleSquad {
             //
             // float alpha = I_dir.y / I_dir.x;
             //
-            // float numerator = -2.0f * a._mass * b._mass * (velocity_diff.x + (1.0f + alpha) * velocity_diff.y);
+            // float numerator = -2.0f * a._mass * b._mass * (velocity_diff.x + alpha * velocity_diff.y);
             // float denominator = (a._mass + b._mass) * (1.0f + alpha * alpha);
             //
             // float x = numerator / denominator;
@@ -114,29 +142,90 @@ namespace MarbleSquad {
             Vector2 I_dir = (b.transform.position - a.transform.position).normalized;
             Vector2 new_x_axis = I_dir;
             Vector2 new_y_axis = new Vector2(-I_dir.y, I_dir.x);
-
+            
             Vector2 new_coord_a_v = a._velocity.ToCoordination(Vector2.right, Vector2.up, new_x_axis, new_y_axis);
             Vector2 new_coord_b_v = b._velocity.ToCoordination(Vector2.right, Vector2.up, new_x_axis, new_y_axis);
             
             Vector2 velocity_diff = new_coord_b_v - new_coord_a_v;
-
+            
             float numerator = -2.0f * a._mass * b._mass * velocity_diff.x;
             float denominator = (a._mass + b._mass) * 1.0f;
-
+            
             float x = numerator / denominator;
             Vector2 I_new = new Vector2(x, 0);
             Vector2 I_orig = I_new.ToCoordination(new_x_axis, new_y_axis, Vector2.right, Vector2.up);
             
             b._velocity += I_orig / b._mass;
             a._velocity -= I_orig / a._mass;
+            
+            
+            // Calculate damage
+            if (is_collision_opposite) {
+                float dmg_a = Vector2.Dot(a._velocity, b_v_orig * b._mass);
+                float dmg_b = Vector2.Dot(b._velocity, a_v_orig * a._mass);
+                TextPoper.Instance.GeneratePopUpText(a.transform.position + Vector3.back * 0.2f, "-" + Math.Floor(dmg_a), TextPoper.PresetColor.RedToBlue);
+                TextPoper.Instance.GeneratePopUpText(b.transform.position + Vector3.back * 0.2f, "-" + Math.Floor(dmg_b), TextPoper.PresetColor.RedToBlue);
+            } else {
+                Vector2 aToCollision = collidePos - a.transform.position.ToVec2();
+                bool isABackCollided = Vector2.Dot(aToCollision, a_v_orig) <= 0.0f;
+
+                ChessPhysics collided = isABackCollided ? a : b;
+                
+                ChessPhysics collider = isABackCollided ? b : a;
+                Vector2 collider_v_orig = isABackCollided ? b_v_orig : a_v_orig;
+                
+                float dmg_collided = Vector2.Dot(collided._velocity, collider_v_orig * collider._mass);
+                TextPoper.Instance.GeneratePopUpText(collided.transform.position + Vector3.back * 0.2f, "-" + dmg_collided, TextPoper.PresetColor.RedToWhite);
+            }
+            
+            // generate pop event text
+            // if (is_collision_opposite) {
+            //     TextPoper.Instance.GeneratePopUpText(collidePos.ToVec3() + Vector3.back * 0.2f, "正撞！", TextPoper.PresetColor.RedToBlue);
+            // } else {
+            //     TextPoper.Instance.GeneratePopUpText(collidePos.ToVec3() + Vector3.back * 0.2f, "背撞！", TextPoper.PresetColor.BlueToGreen);
+            // }
+
+            // apply visual effects 
+            // b.transform.DOShakeScale(0.1f, Vector2.right * 1.1f);
+            // a.transform.DOShakeScale(0.1f, Vector2.right * 1.1f);
 
         }
 
-        private void OnTriggerEnter2D(Collider2D other) {
-            Debug.Log("enter");
-            if (other.transform.GetComponent<ChessPhysics>() != null && isMain) {
-                HandleChessCollide(this, other.transform.GetComponent<ChessPhysics>());
-                Debug.Log("?");
+        // private void OnTriggerEnter2D(Collider2D other) {
+        //     if (other.transform.GetComponent<ChessPhysics>() != null && isMain) {
+        //         HandleChessCollide(this, other.transform.GetComponent<ChessPhysics>());
+        //     }
+        //
+        //     if (other.CompareTag("BarrierX")) {
+        //         Debug.Log("nmsl");
+        //         _velocity = new Vector2(-_velocity.x, _velocity.y) * PhysicsConsts.Instance.bounce_decay;
+        //     }
+        //     
+        //     if (other.CompareTag("BarrierY")) {
+        //         _velocity = new Vector2(_velocity.x, -_velocity.y) * PhysicsConsts.Instance.bounce_decay;
+        //     }
+        // }
+
+        private void OnCollisionEnter2D(Collision2D other) {
+            if (other.transform.GetComponent<ChessPhysics>() != null) {
+
+                ChessPhysics a = this;
+                ChessPhysics b = other.transform.GetComponent<ChessPhysics>();
+
+                float definer = (a.transform.position.x - b.transform.position.x) * (a._velocity.x - b._velocity.x) 
+                                + (a.transform.position.y - b.transform.position.y) * (a._velocity.y - b._velocity.y);
+
+                if (definer < .0f) {
+                    HandleChessCollide(this, other.transform.GetComponent<ChessPhysics>());
+                }
+            }
+
+            if (other.transform.CompareTag("BarrierX")) {
+                _velocity = new Vector2(-_velocity.x, _velocity.y) * PhysicsConsts.Instance.bounce_decay;
+            }
+            
+            if (other.transform.CompareTag("BarrierY")) {
+                _velocity = new Vector2(_velocity.x, -_velocity.y) * PhysicsConsts.Instance.bounce_decay;
             }
         }
     }
