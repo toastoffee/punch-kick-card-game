@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using Sequence = DG.Tweening.Sequence;
 
 namespace MarbleSquad {
  
@@ -19,6 +20,8 @@ namespace MarbleSquad {
         private bool _isMoving => _velocity.magnitude != .0f;
 
         public bool isMain = false;
+
+        public Transform visualPart;
     
         // Start is called before the first frame update
         void Start() {
@@ -61,13 +64,13 @@ namespace MarbleSquad {
                 transform.position += _velocity.ToVec3() * Time.deltaTime;
             }
 
-            if (_isMoving) {
-                // rotate to its forward
-                var z_deg = Vector2.Angle(Vector2.right, _velocity);
-                var rot = Quaternion.Euler(.0f, .0f, z_deg);
-
-                transform.rotation = rot;
-            }
+            // if (_isMoving) {
+            //     // rotate to its forward
+            //     var z_deg = Vector2.Angle(Vector2.right, _velocity);
+            //     var rot = Quaternion.Euler(.0f, .0f, z_deg);
+            //
+            //     transform.rotation = rot;
+            // }
         }
 
         public void AddForce(Vector2 ft) {
@@ -186,8 +189,21 @@ namespace MarbleSquad {
             // }
 
             // apply visual effects 
-            // b.transform.DOShakeScale(0.1f, Vector2.right * 1.1f);
-            // a.transform.DOShakeScale(0.1f, Vector2.right * 1.1f);
+            float a_angle = Mathf.Atan2(a._velocity.y, a._velocity.x) * Mathf.Rad2Deg;
+            float b_angle = Mathf.Atan2(b._velocity.y, b._velocity.x) * Mathf.Rad2Deg;
+            a.visualPart.DORotate(new Vector3(0, 0, a_angle), 0.1f);
+            b.visualPart.DORotate(new Vector3(0, 0, b_angle), 0.1f);
+
+            Sequence a_seq = DOTween.Sequence();
+            Sequence b_seq = DOTween.Sequence();
+
+            a_seq.Append(a.visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.05f));
+            a_seq.Append(a.visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.05f));
+            a_seq.Append(a.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.05f));
+
+            b_seq.Append(b.visualPart.DOScale(new Vector3(0.9f, 1.1f, 1.0f), 0.05f));
+            b_seq.Append(b.visualPart.DOScale(new Vector3(1.1f, 0.9f, 1.0f), 0.05f));
+            b_seq.Append(b.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.05f));
 
         }
 
