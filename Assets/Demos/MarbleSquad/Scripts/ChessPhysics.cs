@@ -17,7 +17,7 @@ namespace MarbleSquad {
     
         private Vector2 _velocity = Vector2.zero;
 
-        private bool _isMoving => _velocity.magnitude != .0f;
+        public bool _isMoving => _velocity.magnitude != .0f;
 
         public bool isMain = false;
 
@@ -27,6 +27,12 @@ namespace MarbleSquad {
         // Start is called before the first frame update
         void Start() {
             _circleCollider = GetComponent<CircleCollider2D>();
+            
+            // register 
+            TurnManager.Instance.allChess.Add(this);
+            if (isMain) {
+                TurnManager.Instance.player = this;
+            }
         }
 
         // Update is called once per frame
@@ -43,22 +49,6 @@ namespace MarbleSquad {
                     _velocity = Vector2.zero;
                 }
             }
-
-            if (Input.GetMouseButtonDown(0) && isMain) {
-                Vector3 cursorPos = Input.mousePosition;
-                Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(cursorPos);
-
-                Vector2 cursorWorldVec2 = cursorWorldPos.ToVec2();
-
-                Vector2 force = cursorWorldVec2 - transform.position.ToVec2();
-                
-                AddForce(force * 2.0f);
-            }
-
-            if (Input.GetKeyDown(KeyCode.J) && isMain) {
-                AddForce(Vector2.right * 10.0f);
-            }
-            
             
             // move as speed (if moves)
             if (_isMoving) {
@@ -201,12 +191,12 @@ namespace MarbleSquad {
             Sequence a_seq = DOTween.Sequence();
             Sequence b_seq = DOTween.Sequence();
             
-            a_seq.Append(a.visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
-            a_seq.Append(a.visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+            a_seq.Append(a.visualPart.DOScale(new Vector3(0.9f, 1.1f, 1.0f), 0.07f));
+            a_seq.Append(a.visualPart.DOScale(new Vector3(1.1f, 0.9f, 1.0f), 0.07f));
             a_seq.Append(a.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
 
-            b_seq.Append(b.visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
-            b_seq.Append(b.visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+            b_seq.Append(b.visualPart.DOScale(new Vector3(0.9f, 1.1f, 1.0f), 0.07f));
+            b_seq.Append(b.visualPart.DOScale(new Vector3(1.1f, 0.9f, 1.0f), 0.07f));
             b_seq.Append(b.visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
             
         }
@@ -245,8 +235,8 @@ namespace MarbleSquad {
                 
                 visualPart.DORotate(new Vector3(0, 0, 90), 0.2f);
                 Sequence seq = DOTween.Sequence();
-                seq.Append(visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
-                seq.Append(visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(0.9f, 1.1f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(1.1f, 0.9f, 1.0f), 0.07f));
                 seq.Append(visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
             }
             
@@ -255,8 +245,8 @@ namespace MarbleSquad {
                 
                 visualPart.DORotate(new Vector3(0, 0, 0), 0.2f);
                 Sequence seq = DOTween.Sequence();
-                seq.Append(visualPart.DOScale(new Vector3(0.7f, 1.3f, 1.0f), 0.07f));
-                seq.Append(visualPart.DOScale(new Vector3(1.3f, 0.7f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(0.9f, 1.1f, 1.0f), 0.07f));
+                seq.Append(visualPart.DOScale(new Vector3(1.1f, 0.9f, 1.0f), 0.07f));
                 seq.Append(visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
             }
         }
