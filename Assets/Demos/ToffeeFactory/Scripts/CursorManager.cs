@@ -9,19 +9,21 @@ namespace ToffeeFactory {
     public Texture2D buttonDownCursor;
     public Texture2D dragCursor;
     
+    public Vector2 hotspot = Vector2.zero;
+    
     private void Start() {
-      Cursor.SetCursor(noneCursor, Vector2.zero, CursorMode.Auto);  
+      Cursor.SetCursor(noneCursor, hotspot, CursorMode.Auto);  
     }
 
     private void Update() {
       if (Input.GetMouseButton(2)) {
-        Cursor.SetCursor(dragCursor, Vector2.zero, CursorMode.Auto);
+        Cursor.SetCursor(dragCursor, hotspot, CursorMode.Auto);
       }
       else if (Input.GetMouseButton(0) || Input.GetMouseButton(1)) {
-        Cursor.SetCursor(buttonDownCursor, Vector2.zero, CursorMode.Auto);
+        Cursor.SetCursor(buttonDownCursor, hotspot, CursorMode.Auto);
       } 
       else {
-        Cursor.SetCursor(noneCursor, Vector2.zero, CursorMode.Auto);  
+        Cursor.SetCursor(noneCursor, hotspot, CursorMode.Auto);  
       }
     }
   }  

@@ -34,10 +34,14 @@ namespace MarbleSquad {
                 Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(cursorPos);
 
                 Vector2 cursorWorldVec2 = cursorWorldPos.ToVec2();
+
+                Vector2 playerToCursorDir = (cursorWorldVec2 - player.transform.position.ToVec2()).normalized;
+
+                Vector2 aimEnd = cursorWorldVec2 - playerToCursorDir * 0.5f;
                 
                 dashLine.SetPositions(new [] {
                     player.transform.position + Vector3.forward * 0.1f, 
-                    cursorWorldVec2.ToVec3() + Vector3.forward * 0.1f, 
+                    aimEnd.ToVec3() + Vector3.forward * 0.1f, 
                 });
                 
                 dashLine.material.SetFloat(LineLengthId, (cursorWorldVec2 - player.transform.position.ToVec2()).magnitude);
