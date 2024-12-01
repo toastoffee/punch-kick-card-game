@@ -66,10 +66,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BarWidth: 0.15
+    - _BorderWidth: 0.03
     - _EnableExternalAlpha: 0
-    - _Percent: 0.88
+    - _Float: 0
+    - _Hp: 8.01
+    - _MaxHp: 10
+    - _Percent: 0.86
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _SplitWidth: 0.08
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
