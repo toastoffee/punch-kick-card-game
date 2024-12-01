@@ -22,8 +22,22 @@ namespace MarbleSquad {
         public bool isMain = false;
 
         public Transform visualPart;
+
+        public CircleValueBar healthBar;
+
+        public int maxHealth;
+
+        private int health;
+
+        [SerializeField]
+        private MeshRenderer speedRenderer;
+
+        [SerializeField]
+        private float maxI;
         
-    
+        private Material speedMat;
+        
+        
         // Start is called before the first frame update
         void Start() {
             _circleCollider = GetComponent<CircleCollider2D>();
@@ -33,6 +47,12 @@ namespace MarbleSquad {
             if (isMain) {
                 TurnManager.Instance.player = this;
             }
+
+            health = maxHealth;
+            healthBar.SetMaxVal(maxHealth);
+            healthBar.SetVal(health);
+
+            speedMat = speedRenderer.material;
         }
 
         // Update is called once per frame
@@ -55,6 +75,12 @@ namespace MarbleSquad {
                 transform.position += _velocity.ToVec3() * Time.deltaTime;
             }
 
+            // Set Speed
+            float I = _velocity.magnitude * _mass;
+            float percent = I / maxI;
+            percent = Mathf.Clamp(percent, 0.0f, 1.0f);
+            speedMat.SetFloat("_Percent", percent);
+            
             // if (_isMoving) {
             //     // rotate to its forward
             //     var z_deg = Vector2.Angle(Vector2.right, _velocity);
@@ -78,6 +104,11 @@ namespace MarbleSquad {
                 // calculate acceleration F = m * a
                 _velocity += ft / _mass;
             }
+        }
+
+        public void TakeDamage(int dmg) {
+            health = Math.Max(0, health - dmg);
+            healthBar.SetVal(health);
         }
 
         public static void HandleChessCollide(ChessPhysics a, ChessPhysics b) {
@@ -160,8 +191,12 @@ namespace MarbleSquad {
             if (is_collision_opposite) {
                 float dmg_a = Vector2.Dot(a._velocity, b_v_orig * b._mass);
                 float dmg_b = Vector2.Dot(b._velocity, a_v_orig * a._mass);
+                
                 TextPoper.Instance.GeneratePopUpText(a.transform.position + Vector3.back * 0.2f, "-" + Math.Floor(dmg_a), TextPoper.PresetColor.RedToBlue);
                 TextPoper.Instance.GeneratePopUpText(b.transform.position + Vector3.back * 0.2f, "-" + Math.Floor(dmg_b), TextPoper.PresetColor.RedToBlue);
+                a.TakeDamage(1);
+                b.TakeDamage(1);
+                
             } else {
                 Vector2 aToCollision = collidePos - a.transform.position.ToVec2();
                 bool isABackCollided = Vector2.Dot(aToCollision, a_v_orig) <= 0.0f;
@@ -173,6 +208,8 @@ namespace MarbleSquad {
                 
                 float dmg_collided = Vector2.Dot(collided._velocity, collider_v_orig * collider._mass);
                 TextPoper.Instance.GeneratePopUpText(collided.transform.position + Vector3.back * 0.2f, "-" + dmg_collided, TextPoper.PresetColor.RedToWhite);
+                collided.TakeDamage(1);
+                
             }
             
             // generate pop event text
