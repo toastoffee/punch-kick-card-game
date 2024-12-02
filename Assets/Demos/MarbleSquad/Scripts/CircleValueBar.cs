@@ -16,11 +16,11 @@ namespace MarbleSquad {
         }
 
         public void SetMaxVal(int val) {
-            _material.SetFloat(MaxHp, val);
+            _material?.SetFloat(MaxHp, val);
         }
 
         public void SetVal(int val) {
-            _material.SetFloat(Hp, val);
+            _material?.SetFloat(Hp, val);
         }
         
     }

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BarrierX
   - BarrierY
+  - Hole
   layers:
   - Default
   - TransparentFX

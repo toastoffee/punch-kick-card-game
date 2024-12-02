@@ -59,7 +59,7 @@ Material:
     - _HandLen: 0.3
     - _HandWidth: 0.02
     - _MaxGear: 3
-    - _Percent: 0.74
+    - _Percent: 0
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Size: 0.35

@@ -14,7 +14,9 @@ namespace MarbleSquad {
 
         public float bounce_decay = 0.9f;
         
-        public float upBound, downBound, leftBound, rightBound;
+        public float dmg2Amount, dmg3Amount;
+        
+        
     }
 
     

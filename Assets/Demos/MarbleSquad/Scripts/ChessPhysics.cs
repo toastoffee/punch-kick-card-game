@@ -30,14 +30,13 @@ namespace MarbleSquad {
         private int health;
 
         [SerializeField]
-        private MeshRenderer speedRenderer;
+        public MeshRenderer speedRenderer;
 
         [SerializeField]
         private float maxI;
         
         private Material speedMat;
-        
-        
+
         // Start is called before the first frame update
         void Start() {
             _circleCollider = GetComponent<CircleCollider2D>();
@@ -74,12 +73,6 @@ namespace MarbleSquad {
             if (_isMoving) {
                 transform.position += _velocity.ToVec3() * Time.deltaTime;
             }
-
-            // Set Speed
-            float I = _velocity.magnitude * _mass;
-            float percent = I / maxI;
-            percent = Mathf.Clamp(percent, 0.0f, 1.0f);
-            speedMat.SetFloat("_Percent", percent);
             
             // if (_isMoving) {
             //     // rotate to its forward
@@ -109,6 +102,11 @@ namespace MarbleSquad {
         public void TakeDamage(int dmg) {
             health = Math.Max(0, health - dmg);
             healthBar.SetVal(health);
+
+            if (health == 0) {
+                TurnManager.Instance.allChess.Remove(this);
+                Destroy(gameObject);
+            }
         }
 
         public static void HandleChessCollide(ChessPhysics a, ChessPhysics b) {
@@ -189,13 +187,34 @@ namespace MarbleSquad {
             
             // Calculate damage
             if (is_collision_opposite) {
-                float dmg_a = Vector2.Dot(a._velocity, b_v_orig * b._mass);
-                float dmg_b = Vector2.Dot(b._velocity, a_v_orig * a._mass);
+                float i_dmg_a = Vector2.Dot(a._velocity, b_v_orig * b._mass);
+                i_dmg_a = Math.Abs(i_dmg_a);
                 
-                TextPoper.Instance.GeneratePopUpText(a.transform.position + Vector3.back * 0.2f, "-" + Math.Floor(dmg_a), TextPoper.PresetColor.RedToBlue);
-                TextPoper.Instance.GeneratePopUpText(b.transform.position + Vector3.back * 0.2f, "-" + Math.Floor(dmg_b), TextPoper.PresetColor.RedToBlue);
-                a.TakeDamage(1);
-                b.TakeDamage(1);
+                float i_dmg_b = Vector2.Dot(b._velocity, a_v_orig * a._mass);
+                i_dmg_b = Math.Abs(i_dmg_b);
+
+                int dmg_a = 1;
+                int dmg_b = 1;
+
+                if (i_dmg_a > PhysicsConsts.Instance.dmg2Amount) {
+                    dmg_a = 2;
+                }
+                if (i_dmg_a > PhysicsConsts.Instance.dmg3Amount) {
+                    dmg_a = 3;
+                }
+                
+                if (i_dmg_b > PhysicsConsts.Instance.dmg2Amount) {
+                    dmg_b = 2;
+                }
+                if (i_dmg_b > PhysicsConsts.Instance.dmg3Amount) {
+                    dmg_b = 3;
+                }
+                
+                TextPoper.Instance.GeneratePopUpText(a.transform.position + Vector3.back * 0.2f, "-" + dmg_a, TextPoper.PresetColor.RedToBlue);
+                TextPoper.Instance.GeneratePopUpText(b.transform.position + Vector3.back * 0.2f, "-" + dmg_b, TextPoper.PresetColor.RedToBlue);
+                
+                a.TakeDamage(dmg_a);
+                b.TakeDamage(dmg_b);
                 
             } else {
                 Vector2 aToCollision = collidePos - a.transform.position.ToVec2();
@@ -206,9 +225,17 @@ namespace MarbleSquad {
                 ChessPhysics collider = isABackCollided ? b : a;
                 Vector2 collider_v_orig = isABackCollided ? b_v_orig : a_v_orig;
                 
-                float dmg_collided = Vector2.Dot(collided._velocity, collider_v_orig * collider._mass);
+                float i_dmg_collided = Vector2.Dot(collided._velocity, collider_v_orig * collider._mass);
+                int dmg_collided = 1;
+                if (i_dmg_collided > PhysicsConsts.Instance.dmg2Amount) {
+                    dmg_collided = 2;
+                }
+                if (i_dmg_collided > PhysicsConsts.Instance.dmg3Amount) {
+                    dmg_collided = 3;
+                }
+                
                 TextPoper.Instance.GeneratePopUpText(collided.transform.position + Vector3.back * 0.2f, "-" + dmg_collided, TextPoper.PresetColor.RedToWhite);
-                collided.TakeDamage(1);
+                collided.TakeDamage(dmg_collided);
                 
             }
             
@@ -285,6 +312,12 @@ namespace MarbleSquad {
                 seq.Append(visualPart.DOScale(new Vector3(0.9f, 1.1f, 1.0f), 0.07f));
                 seq.Append(visualPart.DOScale(new Vector3(1.1f, 0.9f, 1.0f), 0.07f));
                 seq.Append(visualPart.DOScale(new Vector3(1.0f, 1.0f, 1.0f), 0.07f));
+            }
+            
+            if (other.transform.CompareTag("Hole")) {
+                TextPoper.Instance.GeneratePopUpText(transform.position + Vector3.back * 0.2f, "进洞！", TextPoper.PresetColor.RedToWhite);
+                TurnManager.Instance.allChess.Remove(this);
+                Destroy(gameObject);
             }
         }
     }

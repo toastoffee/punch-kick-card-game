@@ -70,8 +70,8 @@ Material:
     - _BorderWidth: 0.03
     - _EnableExternalAlpha: 0
     - _Float: 0
-    - _Hp: 8.01
-    - _MaxHp: 10
+    - _Hp: 8
+    - _MaxHp: 8
     - _Percent: 0.86
     - _QueueControl: 0
     - _QueueOffset: 0
