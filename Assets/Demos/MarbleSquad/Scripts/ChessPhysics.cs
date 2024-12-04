@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Sequence = DG.Tweening.Sequence;
 
 namespace MarbleSquad {
  
-    public class ChessPhysics : MonoBehaviour {
+    public class ChessPhysics : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerExitHandler {
     
         private CircleCollider2D _circleCollider;
 
@@ -36,6 +37,9 @@ namespace MarbleSquad {
         private float maxI;
         
         private Material speedMat;
+
+        [SerializeField]
+        private Transform selectedFrame;
 
         // Start is called before the first frame update
         void Start() {
@@ -319,6 +323,15 @@ namespace MarbleSquad {
                 TurnManager.Instance.allChess.Remove(this);
                 Destroy(gameObject);
             }
+        }
+        public void OnPointerEnter(PointerEventData eventData) {
+            healthBar.transform.DOScale(Vector3.one, 0.1f);
+        }
+        public void OnPointerExit(PointerEventData eventData) {
+            healthBar.transform.DOScale(Vector3.zero, 0.1f);
+        }
+        public void OnPointerDown(PointerEventData eventData) {
+            throw new NotImplementedException();
         }
     }
 
