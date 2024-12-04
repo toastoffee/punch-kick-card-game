@@ -9,7 +9,7 @@ using Sequence = DG.Tweening.Sequence;
 
 namespace MarbleSquad {
  
-    public class ChessPhysics : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerExitHandler {
+    public class ChessPhysics : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {
     
         private CircleCollider2D _circleCollider;
 
@@ -35,12 +35,23 @@ namespace MarbleSquad {
 
         [SerializeField]
         private float maxI;
+
+        [SerializeField]
+        private float maxChargingLen;
         
         private Material speedMat;
 
         [SerializeField]
         private Transform selectedFrame;
 
+        private bool isSelected = false;
+        private bool isDragging = false;
+        
+        private static readonly int LineLengthId = Shader.PropertyToID("_lineLength");
+
+        public LineRenderer dashLine1;
+        public LineRenderer dashLine2;
+        
         // Start is called before the first frame update
         void Start() {
             _circleCollider = GetComponent<CircleCollider2D>();
@@ -85,6 +96,46 @@ namespace MarbleSquad {
             //
             //     transform.rotation = rot;
             // }
+
+            if (isDragging) {
+                dashLine1.gameObject.SetActive(true);
+                dashLine2.gameObject.SetActive(true);
+                
+                // Draw Line
+                Vector3 cursorPos = Input.mousePosition;
+                Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(cursorPos);
+                
+                Vector2 cursorWorldVec2 = cursorWorldPos.ToVec2();
+                
+                Vector2 playerToCursorDir = cursorWorldVec2 - transform.position.ToVec2();
+                
+                Vector2 aimStart = transform.position.ToVec2() - playerToCursorDir;
+
+                Vector2 aimEnd = cursorWorldVec2;
+                
+                dashLine1.SetPositions(new [] {
+                    transform.position.ToVec2().ToVec3() + Vector3.forward * 0.1f, 
+                    aimEnd.ToVec3() + Vector3.forward * 0.1f, 
+                });
+                
+                dashLine2.SetPositions(new [] {
+                    transform.position.ToVec2().ToVec3() + Vector3.forward * 0.1f, 
+                    aimStart.ToVec3() + Vector3.forward * 0.1f, 
+                });
+                
+                dashLine1.material.SetFloat(LineLengthId, (aimStart - aimEnd).magnitude / 2.0f);
+                dashLine2.material.SetFloat(LineLengthId, (aimStart - aimEnd).magnitude / 2.0f);
+                
+                
+                // render charging bar
+                float chargingRate = (aimStart - aimEnd).magnitude / maxChargingLen;
+                chargingRate = Math.Clamp(chargingRate, 0.0f, 1.0f);
+                
+                speedRenderer.material.SetFloat("_Percent", chargingRate);
+            } else {
+                dashLine1.gameObject.SetActive(false);
+                dashLine2.gameObject.SetActive(false);
+            }
         }
 
         public void AddForce(Vector2 ft) {
@@ -120,49 +171,6 @@ namespace MarbleSquad {
             
             Vector2 a_v_orig = a._velocity;
             Vector2 b_v_orig = b._velocity;
-            
-            // Vector2 F_dir = (a.transform.position - b.transform.position).normalized;
-            // Vector2 F_v_dir = new Vector2(- F_dir.y, F_dir.x);
-            //
-            // Vector2 v1_h = a._velocity.ProjectLength(F_dir) * F_dir;
-            // Vector2 v2_h = b._velocity.ProjectLength(F_dir) * F_dir;
-            // Vector2 v1_h_new = (2 * b._mass * v2_h + (a._mass - b._mass) * v1_h) / (a._mass + b._mass);
-            // Vector2 v2_h_new = (2 * a._mass * v1_h + (b._mass - a._mass) * v2_h) / (a._mass + b._mass);
-            //
-            // Vector2 v1_v = a._velocity.ProjectLength(F_v_dir) * F_v_dir;
-            // Vector2 v2_v = b._velocity.ProjectLength(F_v_dir) * F_v_dir;
-            // Vector2 v1_v_new = (2 * b._mass * v2_v + (a._mass - b._mass) * v1_v) / (a._mass + b._mass);
-            // Vector2 v2_v_new = (2 * a._mass * v1_v + (b._mass - a._mass) * v2_v) / (a._mass + b._mass);
-            //
-            // Vector2 v1_new = v1_h_new + v1_v_new;
-            // Vector2 v2_new = v2_h_new + v2_v_new;
-            
-            // ver 2 
-            // float v1_x_new = (2 * b._mass * b._velocity.x + (a._mass - b._mass) * a._velocity.x) / (a._mass + b._mass);
-            // float v2_x_new = (2 * a._mass * a._velocity.x + (b._mass - a._mass) * b._velocity.x) / (a._mass + b._mass);
-            //
-            // float v1_y_new = (2 * b._mass * b._velocity.y + (a._mass - b._mass) * a._velocity.y) / (a._mass + b._mass);
-            // float v2_y_new = (2 * a._mass * a._velocity.y + (b._mass - a._mass) * b._velocity.y) / (a._mass + b._mass);
-            //
-            // a._velocity = new Vector2(v1_x_new, v1_y_new);
-            // b._velocity = new Vector2(v2_x_new, v2_y_new);
-            
-            // ver 3
-            // Vector2 I_dir = (b.transform.position - a.transform.position).normalized;
-            // Vector2 velocity_diff = b._velocity - a._velocity;
-            //
-            // float alpha = I_dir.y / I_dir.x;
-            //
-            // float numerator = -2.0f * a._mass * b._mass * (velocity_diff.x + alpha * velocity_diff.y);
-            // float denominator = (a._mass + b._mass) * (1.0f + alpha * alpha);
-            //
-            // float x = numerator / denominator;
-            //
-            // // I to B
-            // Vector2 I = new Vector2(x, alpha * x);
-            //
-            // b._velocity += I / b._mass;
-            // a._velocity -= I / a._mass;
             
             
             // ver 4
@@ -325,13 +333,27 @@ namespace MarbleSquad {
             }
         }
         public void OnPointerEnter(PointerEventData eventData) {
-            healthBar.transform.DOScale(Vector3.one, 0.1f);
+            selectedFrame.DOScale(Vector3.one * 1.1f, 0.1f);
         }
         public void OnPointerExit(PointerEventData eventData) {
-            healthBar.transform.DOScale(Vector3.zero, 0.1f);
+            selectedFrame.DOScale(Vector3.one, 0.1f);
+
+            if (isSelected) {
+                isSelected = false;
+                isDragging = true;
+                
+                speedRenderer.transform.DOScale(Vector3.one, 0.2f);
+            }
         }
         public void OnPointerDown(PointerEventData eventData) {
-            throw new NotImplementedException();
+            isSelected = true;
+            
+        }
+        public void OnPointerUp(PointerEventData eventData) {
+            isSelected = false;
+            isDragging = false;
+            
+            speedRenderer.transform.DOScale(Vector3.zero, 0.2f);
         }
     }
 
