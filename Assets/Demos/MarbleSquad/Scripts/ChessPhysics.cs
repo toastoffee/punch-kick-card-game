@@ -8,7 +8,13 @@ using UnityEngine.EventSystems;
 using Sequence = DG.Tweening.Sequence;
 
 namespace MarbleSquad {
- 
+
+    public enum EnemyType {
+        Black,
+        Solid,
+        Stripe
+    }
+    
     public class ChessPhysics : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {
     
         private CircleCollider2D _circleCollider;
@@ -53,6 +59,8 @@ namespace MarbleSquad {
         public LineRenderer dashLine2;
 
         public bool hasMoved = false;
+
+        public EnemyType type;
         
         // Start is called before the first frame update
         void Start() {
@@ -164,6 +172,23 @@ namespace MarbleSquad {
                 TurnManager.Instance.allChess.Remove(this);
                 Destroy(gameObject);
             }
+        }
+
+        public void EjectToNearestPlayer() {
+            float lowestDist = 10000.0f;
+            Vector3 target = Vector3.zero;
+            
+            foreach (var chess in TurnManager.Instance.allChess) {
+                if (chess.isMain) {
+                    float dist = (chess.transform.position.ToVec2() - transform.position.ToVec2()).magnitude;
+                    if (dist < lowestDist) {
+                        lowestDist = dist;
+                        target = chess.transform.position.ToVec2();
+                    }
+                }
+            }
+            Vector2 dir = (target.ToVec2() - transform.position.ToVec2()).normalized;
+            AddForce(dir * maxI);
         }
 
         public static void HandleChessCollide(ChessPhysics a, ChessPhysics b) {

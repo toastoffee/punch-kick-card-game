@@ -35,6 +35,10 @@ namespace MarbleSquad {
         }
 
         private void Update() {
+            if (isAllAllyDied()) {
+                turnText.text = $"友方全灭!";
+                return;
+            }
 
             // 结束玩家的回合
             if (isYourTurn && isAllChessStopped() && isAllAllyMoved()) {
@@ -48,18 +52,53 @@ namespace MarbleSquad {
             }
 
             // 进行并结束敌人的回合
-            if (!isYourTurn && isAllChessStopped()) {
+            if (!isYourTurn && !isAllAllyDied() && isAllChessStopped()) {
                 isYourTurn = true;
                 turn++;
                 turnText.text = $"回合 {turn}";
-                
+
+                if (turn % 3 == 1) {
+                    // all solid
+                    foreach (var chess in allChess) {
+                        if (!chess.isMain && chess.type == EnemyType.Solid) {
+                            // eject
+                            chess.EjectToNearestPlayer();
+                        }
+                    }
+                }
+                else if (turn % 3 == 2) {
+                    // all stripe
+                    foreach (var chess in allChess) {
+                        if (!chess.isMain && chess.type == EnemyType.Stripe) {
+                            // eject
+                            chess.EjectToNearestPlayer();
+                        }
+                    }
+                }
+                else if (turn % 3 == 0) {
+                    // black
+                    foreach (var chess in allChess) {
+                        if (!chess.isMain && chess.type == EnemyType.Black) {
+                            // eject
+                            chess.EjectToNearestPlayer();
+                        }
+                    }
+                }
                 
             }
             
             
         }
 
-
+        private bool isAllAllyDied() {
+            foreach (var chess in allChess) {
+                if (chess.isMain) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
         private bool isAllChessStopped() {
             foreach (var chess in allChess) {
                 if (chess._isMoving) {

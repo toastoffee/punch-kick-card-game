@@ -31,7 +31,8 @@ namespace MarbleSquad {
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.Space)) {
-                timeScale = timeScalePresets[activateIdx++ % timeScalePresets.Count];
+                activateIdx = (activateIdx+1) % timeScalePresets.Count;
+                timeScale = timeScalePresets[activateIdx];
             }
 
             timeScaleText.text = $"Time Scale = {timeScale}";

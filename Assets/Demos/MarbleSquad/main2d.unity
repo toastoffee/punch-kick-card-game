@@ -721,7 +721,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 5af9066cf3df34efaac2c465afdab9b9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b01b7e2f74c024cf0bf0756bfa595734, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2636,12 +2636,13 @@ MonoBehaviour:
   healthBar: {fileID: 1256672832}
   maxHealth: 4
   speedRenderer: {fileID: 417718803}
-  maxI: 120
+  maxI: 60
   maxChargingLen: 30
   selectedFrame: {fileID: 1293434833}
   dashLine1: {fileID: 1426076477}
   dashLine2: {fileID: 44699471}
   hasMoved: 0
+  type: 1
 --- !u!58 &822903952
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3230,12 +3231,13 @@ MonoBehaviour:
   healthBar: {fileID: 1973544561}
   maxHealth: 4
   speedRenderer: {fileID: 1774700146}
-  maxI: 120
+  maxI: 60
   maxChargingLen: 30
   selectedFrame: {fileID: 978819953}
   dashLine1: {fileID: 388022683}
   dashLine2: {fileID: 835037167}
   hasMoved: 0
+  type: 2
 --- !u!58 &999098837
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5570,11 +5572,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2744ab9be400046f5811749e97b96dc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mass: 2
+  _mass: 1.5
   isMain: 1
   visualPart: {fileID: 327361762}
   healthBar: {fileID: 361304359}
-  maxHealth: 8
+  maxHealth: 6
   speedRenderer: {fileID: 720776254}
   maxI: 120
   maxChargingLen: 30
@@ -5582,6 +5584,7 @@ MonoBehaviour:
   dashLine1: {fileID: 532358839}
   dashLine2: {fileID: 1766942939}
   hasMoved: 0
+  type: 0
 --- !u!58 &1654693208
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5711,7 +5714,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 142e1f33c4ce644b5aa345f99905d753, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 10458cbb05f7c4f0899885176dbe2e57, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6064,12 +6067,13 @@ MonoBehaviour:
   healthBar: {fileID: 1156735479}
   maxHealth: 4
   speedRenderer: {fileID: 559044843}
-  maxI: 120
+  maxI: 60
   maxChargingLen: 30
   selectedFrame: {fileID: 626215492}
   dashLine1: {fileID: 1524763912}
   dashLine2: {fileID: 2097354975}
   hasMoved: 0
+  type: 2
 --- !u!58 &1813840643
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -6182,11 +6186,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2744ab9be400046f5811749e97b96dc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mass: 2
+  _mass: 1.5
   isMain: 1
   visualPart: {fileID: 1534255805}
   healthBar: {fileID: 1296062703}
-  maxHealth: 8
+  maxHealth: 6
   speedRenderer: {fileID: 1057893070}
   maxI: 120
   maxChargingLen: 30
@@ -6194,6 +6198,7 @@ MonoBehaviour:
   dashLine1: {fileID: 1982890396}
   dashLine2: {fileID: 1257987587}
   hasMoved: 0
+  type: 0
 --- !u!58 &1834971008
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -7034,12 +7039,13 @@ MonoBehaviour:
   healthBar: {fileID: 1503316188}
   maxHealth: 4
   speedRenderer: {fileID: 518095048}
-  maxI: 120
+  maxI: 60
   maxChargingLen: 30
   selectedFrame: {fileID: 1086340854}
   dashLine1: {fileID: 2038807594}
   dashLine2: {fileID: 1841647416}
   hasMoved: 0
+  type: 1
 --- !u!58 &2029306230
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -7288,18 +7294,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2744ab9be400046f5811749e97b96dc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mass: 1
+  _mass: 2
   isMain: 0
   visualPart: {fileID: 1459245419}
   healthBar: {fileID: 1025457809}
-  maxHealth: 4
+  maxHealth: 8
   speedRenderer: {fileID: 1322841907}
-  maxI: 120
+  maxI: 80
   maxChargingLen: 30
   selectedFrame: {fileID: 1180437852}
   dashLine1: {fileID: 327093808}
   dashLine2: {fileID: 2010160270}
   hasMoved: 0
+  type: 0
 --- !u!58 &2088668751
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -8770,12 +8777,13 @@ MonoBehaviour:
   healthBar: {fileID: 5316755644817765588}
   maxHealth: 4
   speedRenderer: {fileID: 2391884901450369546}
-  maxI: 120
+  maxI: 60
   maxChargingLen: 30
   selectedFrame: {fileID: 6276836313588144808}
   dashLine1: {fileID: 684468606130985105}
   dashLine2: {fileID: 3833800718617576368}
   hasMoved: 0
+  type: 2
 --- !u!114 &5871370123198189187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8794,12 +8802,13 @@ MonoBehaviour:
   healthBar: {fileID: 6166945197739374829}
   maxHealth: 4
   speedRenderer: {fileID: 4425952425672033843}
-  maxI: 120
+  maxI: 60
   maxChargingLen: 30
   selectedFrame: {fileID: 5424101631762732689}
   dashLine1: {fileID: 1522835145218593960}
   dashLine2: {fileID: 2984179689434812297}
   hasMoved: 0
+  type: 1
 --- !u!114 &6166945197739374829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8900,7 +8909,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d9b63b319f05846b89fd7039111b6028, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1db077cee0f12416fa53018e4dfd10da, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

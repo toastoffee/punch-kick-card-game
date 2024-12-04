@@ -11,7 +11,7 @@ namespace MarbleSquad {
         private static readonly int MaxHp = Shader.PropertyToID("_MaxHp");
         private static readonly int Hp = Shader.PropertyToID("_Hp");
 
-        private void Start() {
+        private void Awake() {
             _material = GetComponent<MeshRenderer>().material;
         }
 
