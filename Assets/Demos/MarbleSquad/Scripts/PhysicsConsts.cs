@@ -20,12 +20,18 @@ namespace MarbleSquad {
         public float timeScale = 1.0f;
 
         public TMP_Text timeScaleText;
-        
+
+        private List<float> timeScalePresets = new List<float>{ 1.0f , 0.2f, 0.0f };
+
+        private int activateIdx = 0;
+
+        private void Start() {
+            timeScale = timeScalePresets[activateIdx];
+        }
+
         private void Update() {
-            if (Input.GetKey(KeyCode.Space)) {
-                timeScale = 0.2f;
-            } else {
-                timeScale = 1.0f;
+            if (Input.GetKeyDown(KeyCode.Space)) {
+                timeScale = timeScalePresets[activateIdx++ % timeScalePresets.Count];
             }
 
             timeScaleText.text = $"Time Scale = {timeScale}";

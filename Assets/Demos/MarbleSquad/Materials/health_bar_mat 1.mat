@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: health_bar_mat
+  m_Name: health_bar_mat 1
   m_Shader: {fileID: -6465566751694194690, guid: fc6085dabe8cb40fd9e5a84d284b8064, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -70,8 +70,8 @@ Material:
     - _BorderWidth: 0.02
     - _EnableExternalAlpha: 0
     - _Float: 0
-    - _Hp: 6
-    - _MaxHp: 6
+    - _Hp: 4
+    - _MaxHp: 4
     - _Percent: 0.86
     - _QueueControl: 0
     - _QueueOffset: 0

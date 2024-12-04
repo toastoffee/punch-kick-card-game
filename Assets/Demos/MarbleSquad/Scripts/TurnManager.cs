@@ -36,81 +36,24 @@ namespace MarbleSquad {
 
         private void Update() {
 
-            if (!player) {
-                return;
+            // 结束玩家的回合
+            if (isYourTurn && isAllChessStopped() && isAllAllyMoved()) {
+                isYourTurn = false;
+                turnText.text = $"对方回合 {turn}";
+                foreach (var chess in allChess) {
+                    if (chess.isMain) {
+                        chess.hasMoved = false;
+                    }
+                }
             }
 
-            // if (isYourTurn && player) {
-            //     // Draw Line
-            //     Vector3 cursorPos = Input.mousePosition;
-            //     Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(cursorPos);
-            //
-            //     Vector2 cursorWorldVec2 = cursorWorldPos.ToVec2();
-            //
-            //     Vector2 playerToCursorDir = (cursorWorldVec2 - player.transform.position.ToVec2()).normalized;
-            //
-            //     Vector2 aimEnd = cursorWorldVec2 - playerToCursorDir * 0.5f;
-            //     
-            //     dashLine.SetPositions(new [] {
-            //         player.transform.position + Vector3.forward * 0.1f, 
-            //         aimEnd.ToVec3() + Vector3.forward * 0.1f, 
-            //     });
-            //     
-            //     dashLine.material.SetFloat(LineLengthId, (cursorWorldVec2 - player.transform.position.ToVec2()).magnitude);
-            // }
-            //
-            // if (Input.GetMouseButtonDown(0) && isYourTurn && !isCharging) {
-            //     isCharging = true;
-            //     
-            //
-            // }
-            //
-            // if (Input.GetMouseButton(0) && isYourTurn && isCharging) {
-            //     
-            //     chargingI += chargingSign * chargingRate * Time.deltaTime;
-            //     float clampedI = Math.Clamp(chargingI, 0.0f, maxI);
-            //
-            //     if (Math.Abs(chargingI - clampedI) > 0.0001f) {
-            //         chargingSign = -chargingSign;
-            //     }
-            //
-            //     chargingI = clampedI;
-            //     
-            //     player.speedRenderer.material.SetFloat("_Percent", chargingI / maxI);
-            // }
-            //
-            // if (Input.GetMouseButtonUp(0) && isYourTurn && isCharging) {
-            //     Vector3 cursorPos = Input.mousePosition;
-            //     Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(cursorPos);
-            //
-            //     Vector2 cursorWorldVec2 = cursorWorldPos.ToVec2();
-            //
-            //     Vector2 dir = (cursorWorldVec2 - player.transform.position.ToVec2()).normalized;
-            //     
-            //     player.AddForce(dir * chargingI);
-            //     
-            //     // hide charging bar
-            //     player.speedRenderer.transform.DOScale(Vector3.zero, 0.2f);
-            //
-            //     // end turn
-            //     isYourTurn = false;
-            //     isCharging = false;
-            //     dashLine.gameObject.SetActive(false);
-            // }
-
+            // 进行并结束敌人的回合
             if (!isYourTurn && isAllChessStopped()) {
                 isYourTurn = true;
                 turn++;
                 turnText.text = $"回合 {turn}";
                 
-                // display charging bar
-                if (player) {
-                    player.speedRenderer.transform.DOScale(Vector3.one, 0.2f);
-                    chargingI = 0.0f;
-                    chargingSign = +1.0f;
-                    player.speedRenderer.material.SetFloat("_Percent", chargingI / maxI);
-
-                }
+                
             }
             
             
@@ -120,6 +63,15 @@ namespace MarbleSquad {
         private bool isAllChessStopped() {
             foreach (var chess in allChess) {
                 if (chess._isMoving) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private bool isAllAllyMoved() {
+            foreach (var chess in allChess) {
+                if (chess.isMain && !chess.hasMoved) {
                     return false;
                 }
             }

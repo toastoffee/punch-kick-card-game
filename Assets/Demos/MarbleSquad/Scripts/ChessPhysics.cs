@@ -51,6 +51,8 @@ namespace MarbleSquad {
 
         public LineRenderer dashLine1;
         public LineRenderer dashLine2;
+
+        public bool hasMoved = false;
         
         // Start is called before the first frame update
         void Start() {
@@ -333,9 +335,17 @@ namespace MarbleSquad {
             }
         }
         public void OnPointerEnter(PointerEventData eventData) {
+            if (!isMain || hasMoved) {
+                return;
+            }
+            
             selectedFrame.DOScale(Vector3.one * 1.1f, 0.1f);
         }
         public void OnPointerExit(PointerEventData eventData) {
+            if (!isMain || hasMoved) {
+                return;
+            }
+            
             selectedFrame.DOScale(Vector3.one, 0.1f);
 
             if (isSelected) {
@@ -346,12 +356,20 @@ namespace MarbleSquad {
             }
         }
         public void OnPointerDown(PointerEventData eventData) {
-            isSelected = true;
+            if (!isMain || hasMoved) {
+                return;
+            }
             
+            isSelected = true;
         }
         public void OnPointerUp(PointerEventData eventData) {
+            if (!isMain || hasMoved) {
+                return;
+            }
+            
             isSelected = false;
             isDragging = false;
+            hasMoved = true;
             
             // launch
             speedRenderer.transform.DOScale(Vector3.zero, 0.2f);
