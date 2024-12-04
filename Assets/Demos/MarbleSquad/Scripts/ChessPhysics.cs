@@ -76,7 +76,7 @@ namespace MarbleSquad {
             if (_isMoving) {
                 Vector2 friction_dir = -_velocity.normalized;
                 Vector2 friction_f = friction_dir * (PhysicsConsts.Instance.d_mu * _mass * PhysicsConsts.Instance.g);
-                AddForce(friction_f * Time.deltaTime);
+                AddForce(friction_f * (Time.deltaTime * PhysicsConsts.Instance.timeScale));
 
 
                 if (Vector2.Dot(friction_dir, _velocity) > .0f) {
@@ -86,7 +86,7 @@ namespace MarbleSquad {
             
             // move as speed (if moves)
             if (_isMoving) {
-                transform.position += _velocity.ToVec3() * Time.deltaTime;
+                transform.position += _velocity.ToVec3() * (Time.deltaTime * PhysicsConsts.Instance.timeScale);
             }
             
             // if (_isMoving) {
@@ -353,7 +353,23 @@ namespace MarbleSquad {
             isSelected = false;
             isDragging = false;
             
+            // launch
             speedRenderer.transform.DOScale(Vector3.zero, 0.2f);
+            
+            Vector3 cursorPos = Input.mousePosition;
+            Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(cursorPos);
+                
+            Vector2 cursorWorldVec2 = cursorWorldPos.ToVec2();
+            Vector2 playerToCursorDir = cursorWorldVec2 - transform.position.ToVec2();
+            Vector2 aimStart = transform.position.ToVec2() - playerToCursorDir;
+            Vector2 aimEnd = cursorWorldVec2;
+
+            Vector2 dir = (aimStart - aimEnd).normalized;
+            
+            float chargingRate = (aimStart - aimEnd).magnitude / maxChargingLen;
+            chargingRate = Math.Clamp(chargingRate, 0.0f, 1.0f);
+            
+            AddForce(dir * chargingRate * maxI);
         }
     }
 
