@@ -54,7 +54,7 @@ namespace ToffeeFactory {
           Instance.formulaNameText.text = formula.formulaName;
           Instance.formulaContentText.text = FormulaLibrary.GetFormulaStr(formula);
         }
-        if (m_infoSeqChecker.Check(seqNumHolder.Read("info"))) {
+        if (m_infoSeqChecker.ConsumeUpdate(seqNumHolder.Read("info"))) {
           RenderMachineInfo(machineObj);
         }
       }

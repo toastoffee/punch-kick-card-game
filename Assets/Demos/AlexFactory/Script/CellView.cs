@@ -36,7 +36,7 @@ namespace AlexFactory {
     }
 
     private void Draw() {
-      if (!m_drawSeq.Check(m_cell.drawSeq)) {
+      if (!m_drawSeq.ConsumeUpdate(m_cell.drawSeq)) {
         return;
       }
 

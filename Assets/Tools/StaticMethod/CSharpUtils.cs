@@ -213,7 +213,7 @@ public struct SeqNumChecker {
     m_cachedNum = init;
   }
 
-  public bool Check(int seqNum) {
+  public bool ConsumeUpdate(int seqNum) {
     var flag = m_cachedNum != seqNum;
     m_cachedNum = seqNum;
     return flag;

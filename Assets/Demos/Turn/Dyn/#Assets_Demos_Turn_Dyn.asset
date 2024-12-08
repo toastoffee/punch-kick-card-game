@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68ea4114402b5d74083c0f76dde13c86, type: 3}
+  m_Name: '#Assets_Demos_Turn_Dyn'
+  m_EditorClassIdentifier: 
+  isInited: 1
+  normalCountLimit: 100
+  objectGroups:
+  - objectType: UnityEngine.GameObject
+    objects:
+    - {fileID: 3385311720151169067, guid: fa28d030b63e3074cb2178bd748f8b4e, type: 3}
