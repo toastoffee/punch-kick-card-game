@@ -66,7 +66,7 @@ namespace ToffeeFactory {
         createdPipes.Add(pipe);
 
         midPortObj.transform.parent = pipe.transform;
-        Instance.m_ctx.lastSegmentSrc = midPortObj; //!m_ctx的方法被async调用时会被box
+        Instance.m_ctx.lastSegmentSrc = midPortObj; //!m_ctx的方法被async方式调用时，m_ctx会被box
       }
 
       public void WriteAddMidPortCache(Vector3 position) {

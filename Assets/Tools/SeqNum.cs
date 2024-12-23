@@ -48,9 +48,6 @@ public abstract class SeqProp {
 }
 
 public class SeqProp<TModel> : SeqProp {
-  static SeqProp() {
-
-  }
   public TModel value { get; private set; }
   public SeqProp(TModel initVal = default) {
     value = initVal;
