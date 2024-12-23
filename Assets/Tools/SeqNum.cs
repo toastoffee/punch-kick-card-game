@@ -42,3 +42,30 @@ public abstract class SeqNumModelBinder<T> : MonoBehaviour where T : ISeqNumMode
 
   public abstract void OnSeqNumUpdate(T prop);
 }
+
+public abstract class SeqProp {
+  public int seqNum { get; private set; }
+}
+
+public class SeqProp<TModel> : SeqProp {
+  static SeqProp() {
+
+  }
+  public TModel value { get; private set; }
+  public SeqProp(TModel initVal = default) {
+    value = initVal;
+  }
+}
+
+public class SeqNumCache {
+  private Dictionary<SeqProp, int> m_seqNumCache = new Dictionary<SeqProp, int>();
+
+  public bool ConsumeUpdate(SeqProp prop) {
+    if (!m_seqNumCache.ContainsKey(prop)) {
+      m_seqNumCache[prop] = 0;
+    }
+    var flag = m_seqNumCache[prop] != prop.seqNum;
+    m_seqNumCache[prop] = prop.seqNum;
+    return flag;
+  }
+}

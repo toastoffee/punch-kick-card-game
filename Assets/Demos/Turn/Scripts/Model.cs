@@ -12,10 +12,13 @@ namespace TurnGame {
     public int maxHp;
     public int atk;
     public int def;
+    public int swapCost;
     public float defRatio => 1 - 20f / (20 + def);
-    public string debug_name => name.WrapColor(isEnemy ? Color.green : Color.red);
+    public string debug_name => name.WrapColor(isEnemy ? Color.red : Color.green);
 
     public List<SkillProp> skillProps = new List<SkillProp>();
+
+    public EnemyTeaProp enemyProp;
     public void LoadPlyaerSkill(PlayerTeaModel model) {
       skillProps.Clear();
       foreach (var skillModel in model.skills) {
@@ -29,6 +32,10 @@ namespace TurnGame {
       realTake = Mathf.RoundToInt(damage * (1 - defRatio));
       hp -= realTake;
       hp = Mathf.Max(hp, 0);
+    }
+
+    public void InitEnemyProp() {
+      enemyProp = new EnemyTeaProp();
     }
   }
 
@@ -55,6 +62,23 @@ namespace TurnGame {
         teaProps[i].IncSeqNum();
       }
     }
+
+    public TeaProp GetNextMoveEnemy(DuelProp duelProp) {
+      var turn = duelProp.turnIdx;
+      foreach (var tea in teaProps) {
+        if (tea.enemyProp == null) {
+          continue;
+        }
+        if (tea.enemyProp.lastMoveTurn < turn) {
+          return tea;
+        }
+      }
+      return null;
+    }
+  }
+
+  public class EnemyTeaProp : SeqNumModel {
+    public int lastMoveTurn = -1;
   }
 
   public class PlayerProp : SeqNumModel {
@@ -93,15 +117,24 @@ namespace TurnGame {
 
   public class Signal : DuelEvent {
     public string sig;
-    public Signal(string sig) {
+    public object param;
+    public Signal(string sig, object param = null) {
       this.sig = sig;
+      this.param = param;
     }
   }
 
   public class EnemyTurn : DuelEvent {
+    public TeaProp nextMoveEnemy;
+    public CentralHintUI.Control hintControl;
+  }
+
+  public class EnmeyEndTurnDelay : DuelEvent {
+    public EnemyTurn lastEnemyTurn;
+
     protected override IEnumerator Process() {
       yield return new WaitForSeconds(1);
-      var sig = new Signal("enemy_end_turn");
+      var sig = new Signal("enemy_end_turn", this);
       TurnGame.Instance.PushEvent(sig);
     }
   }

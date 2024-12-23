@@ -14,6 +14,9 @@ namespace TurnGame {
     public Text hpText;
     public Text atkText;
     public Text defText;
+    public GameObject swapCostObj;
+    public Text swapCostText;
+
     public override void OnSeqNumUpdate(TeaProp prop) {
       nameText.text = prop.name;
       hpText.text = $"{"HP:"} {prop.hp} / {prop.maxHp}";
@@ -27,6 +30,16 @@ namespace TurnGame {
       var hpRatio = prop.hp / ((float)(prop.maxHp)).NotLessThanZero();
       hpRatio = Mathf.Clamp01(hpRatio);
       hpBar.SetLocalScaleX(hpRatio);
+
+      swapCostObj.SetActive(!prop.isEnemy);
+      if (!prop.isEnemy) {
+        DoPlayerPart(prop);
+      }
+    }
+
+    private void DoPlayerPart(TeaProp teaProp) {
+      swapCostText.text = teaProp.swapCost.ToString();
+      swapCostObj.SetActive(!prop.isFront);
     }
 
     public void OnClick() {

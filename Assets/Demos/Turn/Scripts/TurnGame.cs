@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 namespace TurnGame {
   public class TurnGame : MonoSingleton<TurnGame> {
@@ -28,6 +27,7 @@ namespace TurnGame {
         atk = 20,
         def = 0,
         isFront = true,
+        swapCost = 1,
       };
       carryTeaProp.LoadPlyaerSkill(PlayerTeaDefine.pt_1_carry);
       carryTeaProp.IncSeqNum();
@@ -38,6 +38,7 @@ namespace TurnGame {
         maxHp = 100,
         atk = 8,
         def = 4,
+        swapCost = 1,
       };
       tankTeaProp.LoadPlyaerSkill(PlayerTeaDefine.pt_2_tank);
       tankTeaProp.IncSeqNum();
@@ -59,6 +60,7 @@ namespace TurnGame {
         isFront = true,
         isEnemy = true,
       };
+      enemy1prop.InitEnemyProp();
       enemy1prop.IncSeqNum();
 
       _InstTeaView(enemy1prop, enemyContainer);
@@ -133,11 +135,16 @@ namespace TurnGame {
               duelProp.inPlayerTurn = false;
               duelProp.IncSeqNum();
 
-              var enemyTurnEve = new EnemyTurn();
+              var enemyTurnEve = new EnemyTurn() {
+                nextMoveEnemy = duelProp.enemyTeamProp.GetNextMoveEnemy(duelProp),
+                hintControl = CentralHintUI.Instance.GetControl(),
+              };
               PushEvent(enemyTurnEve);
               break;
 
             case "enemy_end_turn":
+              var delay = sig.param as EnmeyEndTurnDelay;
+              delay.lastEnemyTurn.hintControl.Close();
               duelProp.turnIdx++;
               duelProp.inPlayerTurn = true;
               playerProp.ap = playerProp.maxAp;
@@ -148,6 +155,9 @@ namespace TurnGame {
         }
 
         if (curEve is SetTeamFront sfe) {
+          if (sfe.frontIdx == duelProp.playerTeamProp.frontIndex) {
+            continue;
+          }
           if (playerProp.ap <= 0) {
             continue;
           }
@@ -177,6 +187,10 @@ namespace TurnGame {
           dmg.receiver.ApplyDamage(dmg.damage, out realDmg); ;
           dmg.receiver.IncSeqNum();
           Debug.Log($"[{dmg.attacker.debug_name}] 对 [{dmg.receiver.debug_name}] 造成了 [{realDmg.ToString().WrapColor(Color.white)}] 点伤害");
+        }
+
+        if (curEve is EnemyTurn et) {
+          HandleEnemyTurn(et);
         }
 
         StartCoroutine(curEve.RunProcess());
@@ -209,6 +223,26 @@ namespace TurnGame {
       }
 
       StartCoroutine(CastingContext.StartCast(ctx));
+    }
+
+    public void HandleEnemyTurn(EnemyTurn enemyTurn) {
+      if (enemyTurn.nextMoveEnemy == null) {
+        var endTurnDelay = new EnmeyEndTurnDelay {
+          lastEnemyTurn = enemyTurn,
+        };
+        PushEvent(endTurnDelay);
+        return;
+      }
+      enemyTurn.hintControl.ShowHint(CentralHintUI.Hint.ENEMY_MOVING);
+      var tea = enemyTurn.nextMoveEnemy;
+
+      tea.enemyProp.lastMoveTurn = duelProp.turnIdx;
+
+      var nextTurn = new EnemyTurn() {
+        nextMoveEnemy = duelProp.enemyTeamProp.GetNextMoveEnemy(duelProp),
+        hintControl = enemyTurn.hintControl,
+      };
+      PushEvent(nextTurn);
     }
   }
 }

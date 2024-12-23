@@ -25,10 +25,12 @@ namespace TurnGame {
     }
     public enum Hint {
       SELECTING_TARGET,
+      ENEMY_MOVING,
     }
     private class HintFormatTable : TemplateTable<Hint, string> {
       protected override void OnCreateTable(Dictionary<Hint, string> dict) {
         dict[Hint.SELECTING_TARGET] = "{0}: 选择目标";
+        dict[Hint.ENEMY_MOVING] ="敌人行动";
       }
     }
     private Control m_control;
