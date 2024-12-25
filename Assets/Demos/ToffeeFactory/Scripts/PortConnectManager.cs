@@ -6,8 +6,35 @@ using DG.Tweening;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using UnityEngine.UIElements;
 
 namespace ToffeeFactory {
+  [Serializable]
+  public class ConnectionRef {
+    public Port srcPort;
+    public Port dstPort;
+    public List<GameObject> pipeObjs = new List<GameObject>();
+    public List<GameObject> midPortObjs = new List<GameObject>();
+    private bool m_isAlive;
+
+    public ConnectionRef() {
+      m_isAlive = true;
+    }
+
+    public void Disconnect() {
+      if (!m_isAlive) {
+        return;
+      }
+      m_isAlive = false;
+      foreach (var obj in pipeObjs) {
+        GameObject.Destroy(obj);
+      }
+      foreach (var obj in midPortObjs) {
+        GameObject.Destroy(obj);
+      }
+    }
+  }
+
   public class PortConnectManager : MonoSingleton<PortConnectManager> {
     private struct Context {
       public bool isRunning;
@@ -18,7 +45,7 @@ namespace ToffeeFactory {
       private Vector3 m_cachedMidPortPos;
 
       private TimeFlag m_interactLock;
-      private const float INTERACT_LOCK = 0.15f;
+      private const float INTERACT_LOCK = 0.4f;
 
       public bool hasAddMidPortCache { get; private set; }
 
@@ -42,6 +69,16 @@ namespace ToffeeFactory {
 
         var pipe = Instance.BuildPipe(lastSegmentSrc.transform.position, port.transform.position);
         pipe.transform.parent = lastSegmentSrc.transform;
+
+        var res = new ConnectionRef() {
+          srcPort = srcPort,
+          dstPort = port,
+          pipeObjs = createdPipes,
+          midPortObjs = createdMidPorts,
+        };
+
+        srcPort.connectionRef = res;
+        port.connectionRef = res;
       }
 
       public async void TryAddMidPort(Vector3 position) {
@@ -50,23 +87,33 @@ namespace ToffeeFactory {
         }
         m_interactLock.SetTrue();
 
+        var src = lastSegmentSrc.transform.position;
+        var end = position;
+
         var midPortObj = Instantiate(Instance.midPortPrefab);
-        midPortObj.transform.position = position;
+        midPortObj.transform.position = end;
         createdMidPorts.Add(midPortObj);
 
-        //var pipe = Instance.BuildPipe(lastSegmentSrc.transform.position, position);
-        //pipe.transform.parent = lastSegmentSrc.transform;
-
-        var buildCtx = new PipeCheckValidTaskCtx {
-          src = lastSegmentSrc.transform.position,
-          end = position
-        };
-        await CreatePipeAndCheckValid(buildCtx);
-        var pipe = buildCtx.pipe;
+        var pipe = Instance.BuildPipe(src, end);
+        pipe.transform.parent = lastSegmentSrc.transform;
         createdPipes.Add(pipe);
 
-        midPortObj.transform.parent = pipe.transform;
-        Instance.m_ctx.lastSegmentSrc = midPortObj; //!m_ctx的方法被async方式调用时，m_ctx会被box
+        var buildCtx = new PipeCheckValidTaskCtx {
+          pipe = pipe,
+          midPort = midPortObj,
+        };
+
+        await CheckValid(buildCtx);
+
+        if (buildCtx.isValid) {
+          midPortObj.transform.parent = pipe.transform;
+          Instance.m_ctx.lastSegmentSrc = midPortObj; //!m_ctx的方法被async方式调用时，m_ctx会被box
+        } else {
+          createdMidPorts.Remove(midPortObj);
+          createdPipes.Remove(pipe);
+          Destroy(midPortObj);
+          Destroy(pipe);
+        }
       }
 
       public void WriteAddMidPortCache(Vector3 position) {
@@ -87,19 +134,23 @@ namespace ToffeeFactory {
       }
 
       private class PipeCheckValidTaskCtx {
-        public Vector3 src;
-        public Vector3 end;
         public GameObject pipe;
+        public GameObject midPort;
         public bool isValid;
       }
 
 
-      private async Task CreatePipeAndCheckValid(PipeCheckValidTaskCtx ctx) {
-        var pipe = Instance.BuildPipe(ctx.src, ctx.end);
-        pipe.transform.parent = lastSegmentSrc.transform;
-        await UniTask.DelayFrame(2);
-        ctx.pipe = pipe;
-        ctx.isValid = true;
+      private async Task CheckValid(PipeCheckValidTaskCtx ctx) {
+        await UniTask.DelayFrame(2, PlayerLoopTiming.FixedUpdate);
+
+        var midPortCollision = ctx.midPort.GetComponentInChildren<CircuitCollision>();
+        var pipeCollision = ctx.pipe.GetComponentInChildren<CircuitCollision>();
+
+        if (midPortCollision.isLegal && pipeCollision.isLegal) {
+          ctx.isValid = true;
+        } else {
+          ctx.isValid = false;
+        }
       }
     }
 
@@ -163,7 +214,18 @@ namespace ToffeeFactory {
       Vector3[] poses = BeautifyPath(src, end, 0.25f);
       pipe.positionCount = poses.Length;
       pipe.SetPositions(poses);
-      pipe.gameObject.AddComponent<BoxCollider2D>();
+      var boxCol = pipe.gameObject.AddComponent<BoxCollider2D>();
+      boxCol.isTrigger = true;
+      var longIdx = boxCol.size[1] > boxCol.size[0] ? 1 : 0;
+      var newSize = boxCol.size;
+      newSize[longIdx] -= 3;
+      boxCol.size = newSize;
+
+      var absDelta = end - src;
+      absDelta.x = Mathf.Abs(absDelta.x);
+      absDelta.y = Mathf.Abs(absDelta.y);
+      var isVer = absDelta.y > absDelta.x;
+      pipe.GetComponent<CircuitCollision>().isVerWire = isVer;
 
       return pipe.gameObject;
     }

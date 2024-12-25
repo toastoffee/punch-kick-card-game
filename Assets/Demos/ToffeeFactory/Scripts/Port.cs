@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace ToffeeFactory {
-  
+
 
   public class Port : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
 
@@ -16,7 +16,8 @@ namespace ToffeeFactory {
     public PortType type => m_type;
     public Port connectedPort { get => m_connectedPort; set => m_connectedPort = value; }
 
-    [HideInInspector]
+    #region Legacy
+  [HideInInspector]
     public GameObject connectPipe = null;
 
     [HideInInspector]
@@ -37,34 +38,38 @@ namespace ToffeeFactory {
     [SerializeField]
     private float hoverSwellDuration, pressedShrinkDuration, recoverDuration;
 
+    public ConnectionRef connectionRef;
+
     public TMP_Text typeText, countText;
 
     private Tween _exitTween, _enterTween, _clickTween;
-    
+
     private Tween exitTween {
       set {
         _exitTween = value;
       }
       get => _exitTween;
     }
-    
+
     private Tween enterTween {
       set {
         _enterTween = value;
       }
       get => _enterTween;
     }
-    
+
     private Tween clickTween {
       set {
         _clickTween = value;
       }
       get => _clickTween;
     }
-    
+  #endregion
+
+
+
     private void Start() {
       spr.sprite = unConnectSprite;
-
       transform.position = TFUtils.SnapToGrid(transform.position);
     }
 
@@ -90,9 +95,8 @@ namespace ToffeeFactory {
         connectedPort.connectPipe = null;
         connectedPort.connectedPort = null;
         connectedPort = null;
-
-        Destroy(connectPipe);
         connectPipe = null;
+        connectionRef.Disconnect();
       }
     }
 
@@ -102,7 +106,7 @@ namespace ToffeeFactory {
       } else if (eventData.button == PointerEventData.InputButton.Right) {
         Disconnect();
       }
-      
+
 
       Sequence sequence = DOTween.Sequence();
       sequence.Append(spr.transform.DOScale(pressedShrinkSize * Vector3.one, pressedShrinkDuration));
